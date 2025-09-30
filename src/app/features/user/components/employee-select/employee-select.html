@@ -1,0 +1,92 @@
+<!-- employee-select.html -->
+<div #inputContainer class="relative w-full">
+  <label
+    class="input w-full rounded-lg border px-3 py-2 pr-10 border-text-light dark:border-text-dark focus:outline-none focus:border-primary bg-primary-light dark:bg-secondary-dark"
+  >
+
+    <svg class="w-4 h-4 opacity-50">
+      <use [attr.href]="getIconHref('user-plus')"></use>
+    </svg>
+    <input
+        class="placeholder:opacity-50"
+      id="searchInput"
+      type="text"
+      [value]="searchText()"
+      (input)="updateSearchText($any($event.target).value)"
+      (focus)="isDropdownOpen.set(true)"
+      placeholder="Search employee..."
+    />
+  </label>
+  <!-- Dropdown using computed signals -->
+  @if (isDropdownOpen()) {
+  <div
+    class="absolute z-10 mt-1 w-full border rounded-md max-h-60 overflow-auto bg-primary-light dark:bg-secondary-dark"
+    role="listbox"
+  >
+    <ul>
+      @if (hasResults()) { @for (emp of filteredEmployees(); track $index;) {
+      <li
+        (click)="selectEmployee(emp)"
+        class="flex items-center px-3 py-2 cursor-pointer hover:bg-primary-500/50"
+        role="option"
+        [attr.aria-selected]="selectedEmployee()?.id === emp.id"
+      >
+        @if (emp.photo) {
+        <img
+          [src]="emp.photo"
+          alt="Photo of {{ emp.firstName }}"
+          class="w-8 h-8 rounded-full object-cover mr-3"
+        />
+        } @else {
+        <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3">
+          <span class="text-xs">{{ emp.firstName?.charAt(0) || "?" }}</span>
+        </div>
+        }
+        <span class="">{{ emp.firstName }}</span>
+      </li>
+      } } @else {
+      <li class="px-3 py-2 italic" role="option">
+        No employees found
+      </li>
+      }
+    </ul>
+  </div>
+  }
+  <!-- Selected employee -->
+  @if (selectedEmployee(); as emp) {
+  <div
+    class="mt-3 flex items-center p-2 shadow-md bg-primary-light dark:bg-secondary-dark rounded-md"
+  >
+    @if (emp.photo) {
+    <img
+      [src]="emp.photo"
+      alt="Selected photo"
+      class="w-10 h-10 rounded-full object-cover mr-3"
+    />
+    } @else {
+    <div class="w-10 h-10 rounded-full flex items-center justify-center mr-3">
+      <span class="text-sm">{{ emp.firstName?.charAt(0) || "?" }}</span>
+    </div>
+    }
+    <span class="font-medium">{{ emp.firstName  }} {{ emp.lastName  }}</span>
+    <button
+      (click)="clearSelection()"
+      class="ml-auto hover:text-gray-700"
+      aria-label="Deselect employee"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </button>
+  </div>
+  }
+</div>

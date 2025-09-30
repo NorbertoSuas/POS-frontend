@@ -1,0 +1,459 @@
+<div class="reports-container">
+  <!-- Header Section -->
+  <div class="reports-header">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <div class="stats-icon purple mr-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-chart-bar"></use>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold text-text-light dark:text-text-dark mb-2">Reports & Analytics</h1>
+          <p class="text-gray-600 dark:text-gray-300 text-lg">Comprehensive reporting and analytics for cash register operations</p>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button 
+          (click)="refreshReports()"
+          class="btn-primary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-refresh-cw"></use>
+          </svg>
+          Refresh
+        </button>
+        <button 
+          (click)="exportReports()"
+          class="btn-secondary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-download"></use>
+          </svg>
+          Export
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="mb-6">
+      <h2 class="text-2xl font-bold text-text-light dark:text-text-dark mb-2">Report Filters</h2>
+      <p class="text-gray-600 dark:text-gray-300">Filter reports by date range, cash registers, and session status</p>
+    </div>
+    <form [formGroup]="reportFiltersForm" (ngSubmit)="applyFilters()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div>
+        <label for="startDate" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Start Date</label>
+        <input id="startDate" type="date" formControlName="startDate"
+               class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      </div>
+      
+      <div>
+        <label for="endDate" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">End Date</label>
+        <input id="endDate" type="date" formControlName="endDate"
+               class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      </div>
+      
+      <div>
+        <label for="cashRegisters" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Cash Registers</label>
+        <select id="cashRegisters" formControlName="cashRegisterIds" multiple
+                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option value="">All Cash Registers</option>
+          @for (cashRegister of cashRegisterService.cashRegisters(); track cashRegister.id) {
+            <option [value]="cashRegister.id">{{ cashRegister.name }}</option>
+          }
+        </select>
+      </div>
+      
+      <div>
+        <label for="sessionStatuses" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Session Status</label>
+        <select id="sessionStatuses" formControlName="sessionStatuses" multiple
+                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option value="">All Statuses</option>
+          <option value="Open">Open</option>
+          <option value="Closed">Closed</option>
+          <option value="Suspended">Suspended</option>
+        </select>
+      </div>
+      
+      <div class="md:col-span-2 lg:col-span-4 flex gap-3">
+        <button type="submit" class="btn-primary">
+          Apply Filters
+        </button>
+        <button type="button" (click)="resetFilters()" class="btn-secondary">
+          Reset Filters
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="report-tabs">
+    <div class="flex gap-2 mb-6">
+      <button type="button" 
+              (click)="setActiveTab('analytics')"
+              [class]="activeTab === 'analytics' ? 'tab-button active' : 'tab-button'">
+        <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-chart-pie"></use>
+        </svg>
+        Analytics Dashboard
+      </button>
+      <button type="button" 
+              (click)="setActiveTab('cash-registers')"
+              [class]="activeTab === 'cash-registers' ? 'tab-button active' : 'tab-button'">
+        <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-building"></use>
+        </svg>
+        Cash Register Reports
+      </button>
+      <button type="button" 
+              (click)="setActiveTab('sessions')"
+              [class]="activeTab === 'sessions' ? 'tab-button active' : 'tab-button'">
+        <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-clock"></use>
+        </svg>
+        Session Reports
+      </button>
+      <button type="button" 
+              (click)="setActiveTab('movements')"
+              [class]="activeTab === 'movements' ? 'tab-button active' : 'tab-button'">
+        <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-arrow-left-right"></use>
+        </svg>
+        Movement Reports
+      </button>
+    </div>
+  </div>
+
+  <!-- Analytics Dashboard Tab -->
+  @if (activeTab === 'analytics') {
+    <div class="space-y-8">
+      <!-- Key Metrics -->
+      @if (getAnalyticsData(); as analytics) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="stats-card">
+            <div class="flex items-center">
+              <div class="stats-icon blue">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-building"></use>
+                </svg>
+              </div>
+              <div>
+                <p class="stats-label">Total Cash Registers</p>
+                <p class="stats-value">{{ analytics.totalCashRegisters }}</p>
+                <p class="stats-subtitle">All registers</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-card">
+            <div class="flex items-center">
+              <div class="stats-icon green">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-clock"></use>
+                </svg>
+              </div>
+              <div>
+                <p class="stats-label">Active Sessions</p>
+                <p class="stats-value">{{ analytics.activeSessions }}</p>
+                <p class="stats-subtitle">Currently open</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-card">
+            <div class="flex items-center">
+              <div class="stats-icon emerald">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-arrow-up"></use>
+                </svg>
+              </div>
+              <div>
+                <p class="stats-label">Total Income</p>
+                <p class="stats-value">{{ formatCurrency(analytics.totalIncome) }}</p>
+                <p class="stats-subtitle">Cash inflows</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-card">
+            <div class="flex items-center">
+              <div class="stats-icon red">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-arrow-down"></use>
+                </svg>
+              </div>
+              <div>
+                <p class="stats-label">Total Expenses</p>
+                <p class="stats-value">{{ formatCurrency(analytics.totalExpenses) }}</p>
+                <p class="stats-subtitle">Cash outflows</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Overview -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="card">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 class="text-lg font-semibold text-text-light dark:text-text-dark">Top Performing Cash Register</h3>
+            </div>
+            <div class="p-6">
+              @if (analytics.topPerformingCashRegister) {
+                <div class="text-center">
+                  <div class="bg-emerald-100 dark:bg-emerald-900/20 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <use href="assets/icons/sprite.svg#icon-trophy"></use>
+                    </svg>
+                  </div>
+                  <h4 class="text-xl font-semibold text-text-light dark:text-text-dark mb-2">{{ analytics.topPerformingCashRegister.name }}</h4>
+                  <p class="text-gray-600 dark:text-gray-300 mb-4">{{ analytics.topPerformingCashRegister.description || 'No description' }}</p>
+                  <div class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-lg">
+                    <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ formatCurrency(analytics.netBalance) }}</p>
+                    <p class="text-sm text-emerald-700 dark:text-emerald-300">Net Balance</p>
+                  </div>
+                </div>
+              } @else {
+                <div class="text-center py-8">
+                  <p class="text-gray-500 dark:text-gray-400">No data available</p>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 class="text-lg font-semibold text-text-light dark:text-text-dark">Performance Metrics</h3>
+            </div>
+            <div class="p-6 space-y-4">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-300">Total Movements</span>
+                <span class="font-semibold text-text-light dark:text-text-dark">{{ analytics.totalMovements }}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-300">Net Balance</span>
+                <span class="font-semibold text-text-light dark:text-text-dark">{{ formatCurrency(analytics.netBalance) }}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-300">Average Session Duration</span>
+                <span class="font-semibold text-text-light dark:text-text-dark">{{ formatDuration(analytics.averageSessionDuration) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card">
+          <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-text-light dark:text-text-dark">Recent Activity</h3>
+          </div>
+          <div class="p-6">
+            @if (analytics.recentActivity.length > 0) {
+              <div class="space-y-3">
+                @for (activity of analytics.recentActivity; track activity.date) {
+                  <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex items-center">
+                      <div class="w-2 h-2 rounded-full mr-3" [class]="getCategoryClass(activity.category).split(' ')[0]"></div>
+                      <div>
+                        <p class="text-sm font-medium text-text-light dark:text-text-dark">{{ activity.movementType }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ activity.cashRegisterName }} • {{ formatDateTime(activity.date) }}</p>
+                      </div>
+                    </div>
+                    <span class="font-semibold" [class]="getAmountClass(activity.category)">{{ formatCurrency(activity.amount) }}</span>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="text-center py-8">
+                <p class="text-gray-500 dark:text-gray-400">No recent activity</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Cash Register Reports Tab -->
+  @if (activeTab === 'cash-registers') {
+    <div class="card">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Cash Register Performance</h2>
+          <button type="button" 
+                  (click)="exportCashRegisterReports()"
+                  class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use href="assets/icons/sprite.svg#icon-download"></use>
+            </svg>
+            Export Report
+          </button>
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="overflow-x-auto">
+          <table class="reports-table">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th scope="col">Cash Register</th>
+                <th scope="col">Sessions</th>
+                <th scope="col">Active</th>
+                <th scope="col">Movements</th>
+                <th scope="col">Income</th>
+                <th scope="col">Expenses</th>
+                <th scope="col">Net Balance</th>
+                <th scope="col">Avg Duration</th>
+                <th scope="col">Last Activity</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (report of getCashRegisterReports(); track report.cashRegister.id) {
+                <tr class="table-row border-b border-gray-200 dark:border-gray-700">
+                  <td class="py-4">
+                    <div>
+                      <p class="font-semibold text-text-light dark:text-text-dark">{{ report.cashRegister.name }}</p>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">{{ report.cashRegister.description || 'No description' }}</p>
+                    </div>
+                  </td>
+                  <td class="py-4 text-text-light dark:text-text-dark">{{ report.totalSessions }}</td>
+                  <td class="py-4 text-text-light dark:text-text-dark">{{ report.activeSessions }}</td>
+                  <td class="py-4 text-text-light dark:text-text-dark">{{ report.totalMovements }}</td>
+                  <td class="py-4 text-green-600 dark:text-green-400 font-semibold">{{ formatCurrency(report.totalIncome) }}</td>
+                  <td class="py-4 text-red-600 dark:text-red-400 font-semibold">{{ formatCurrency(report.totalExpenses) }}</td>
+                  <td class="py-4 font-bold" [class]="report.netBalance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                    {{ formatCurrency(report.netBalance) }}
+                  </td>
+                  <td class="py-4 text-text-light dark:text-text-dark">{{ formatDuration(report.averageSessionDuration) }}</td>
+                  <td class="py-4 text-text-light dark:text-text-dark">
+                    {{ report.lastActivity ? formatDate(report.lastActivity) : 'N/A' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Session Reports Tab -->
+  @if (activeTab === 'sessions') {
+    <div class="card">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Session Reports</h2>
+          <button type="button" 
+                  (click)="exportSessionReports()"
+                  class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use href="assets/icons/sprite.svg#icon-download"></use>
+            </svg>
+            Export Report
+          </button>
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="overflow-x-auto">
+          <table class="reports-table">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th scope="col">Cash Register</th>
+                <th scope="col">Employee</th>
+                <th scope="col">Open Date</th>
+                <th scope="col">Close Date</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Opening Balance</th>
+                <th scope="col">Closing Balance</th>
+                <th scope="col">Net Balance</th>
+                <th scope="col">Discrepancy</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (report of getSessionReports(); track report.session.id) {
+                <tr class="table-row border-b border-gray-200 dark:border-gray-700">
+                  <td class="py-4 text-text-light dark:text-text-dark font-semibold">{{ report.cashRegisterName }}</td>
+                  <td class="py-4 text-text-light dark:text-text-dark">Employee {{ report.session.employeeId }}</td>
+                  <td class="py-4 text-text-light dark:text-text-dark">{{ formatDate(report.session.openDate) }}</td>
+                  <td class="py-4 text-text-light dark:text-text-dark">
+                    {{ report.session.closeDate ? formatDate(report.session.closeDate) : 'N/A' }}
+                  </td>
+                  <td class="py-4 text-text-light dark:text-text-dark">{{ formatDuration(report.duration) }}</td>
+                  <td class="py-4 text-text-light dark:text-text-dark">{{ formatCurrency(report.session.openingBalance) }}</td>
+                  <td class="py-4 text-text-light dark:text-text-dark">
+                    {{ report.session.closingBalance ? formatCurrency(report.session.closingBalance) : 'N/A' }}
+                  </td>
+                  <td class="py-4 font-bold" [class]="report.netBalance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                    {{ formatCurrency(report.netBalance) }}
+                  </td>
+                  <td class="py-4 font-bold" [class]="report.discrepancy === 0 ? 'text-gray-600 dark:text-gray-400' : 'text-yellow-600 dark:text-yellow-400'">
+                    {{ formatCurrency(report.discrepancy) }}
+                  </td>
+                  <td class="py-4">
+                    <span class="status-badge {{ getStatusClass(report.session.status) }}">
+                      {{ report.session.status }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Movement Reports Tab -->
+  @if (activeTab === 'movements') {
+    <div class="card">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Movement Reports</h2>
+          <button type="button" 
+                  (click)="exportMovementReports()"
+                  class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use href="assets/icons/sprite.svg#icon-download"></use>
+            </svg>
+            Export Report
+          </button>
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="overflow-x-auto">
+          <table class="reports-table">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th scope="col">Date</th>
+                <th scope="col">Cash Register</th>
+                <th scope="col">Type</th>
+                <th scope="col">Category</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Description</th>
+                <th scope="col">Reference</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (report of getMovementReports(); track report.date) {
+                <tr class="table-row border-b border-gray-200 dark:border-gray-700">
+                  <td class="py-4 text-text-light dark:text-text-dark">{{ formatDateTime(report.date) }}</td>
+                  <td class="py-4 text-text-light dark:text-text-dark font-semibold">{{ report.cashRegisterName }}</td>
+                  <td class="py-4 text-text-light dark:text-text-dark">{{ report.movementType }}</td>
+                  <td class="py-4">
+                    <span class="category-badge {{ getCategoryClass(report.category) }}">
+                      {{ report.category }}
+                    </span>
+                  </td>
+                  <td class="py-4 font-bold" [class]="getAmountClass(report.category)">
+                    {{ formatCurrency(report.amount) }}
+                  </td>
+                  <td class="py-4 text-text-light dark:text-text-dark">{{ report.description || 'No description' }}</td>
+                  <td class="py-4 text-text-light dark:text-text-dark font-mono text-sm">{{ report.reference || '-' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</div>

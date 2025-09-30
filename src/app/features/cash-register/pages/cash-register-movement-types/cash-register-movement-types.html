@@ -1,0 +1,254 @@
+<div class="p-6 bg-secondary-light dark:bg-secondary-dark min-h-screen">
+  <!-- Header Section -->
+  <div class="card mb-8">
+    <div class="flex items-center mb-4">
+      <div class="bg-purple-500 p-3 rounded-lg mr-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-tag"></use>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold text-text-light dark:text-text-dark">Movement Types</h1>
+        <p class="text-gray-600 dark:text-gray-300 mt-1">Manage movement types and categories for cash register operations</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon purple">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-tag"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Total Types</p>
+          <p class="stats-value">{{ movementService.movementTypes().length }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon green">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-check-circle"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Active Types</p>
+          <p class="stats-value">{{ getActiveTypesCount() }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon blue">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-chart-pie"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Categories</p>
+          <p class="stats-value">3</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Movement Types Management -->
+  <div class="card">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Movement Types</h2>
+        <div class="flex gap-2">
+          <button type="button" 
+                  (click)="exportData()"
+                  class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use href="assets/icons/sprite.svg#icon-download"></use>
+            </svg>
+            Export
+          </button>
+          <button type="button" 
+                  (click)="openCreateModal()"
+                  class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
+            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use href="assets/icons/sprite.svg#icon-plus"></use>
+            </svg>
+            Add Type
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6">
+      <!-- Movement Types Table -->
+      <div class="overflow-x-auto">
+        <table class="movement-types-table">
+          <thead>
+            <tr class="border-b border-gray-200 dark:border-gray-700">
+              <th scope="col">Name</th>
+              <th scope="col">Description</th>
+              <th scope="col">Category</th>
+              <th scope="col">Status</th>
+              <th scope="col">Usage Count</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (movementService.loading()) {
+              <tr>
+                <td colspan="6" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="loading-spinner h-12 w-12"></div>
+                    <p class="mt-4 text-gray-600 dark:text-gray-300">Loading movement types...</p>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (!movementService.loading() && movementService.movementTypes().length === 0) {
+              <tr>
+                <td colspan="6" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="bg-purple-100 dark:bg-purple-900/20 p-6 rounded-full mb-4">
+                      <svg class="w-12 h-12 text-purple-500 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-tag"></use>
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2">No movement types found</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">Create your first movement type to get started</p>
+                    <button type="button" 
+                            (click)="openCreateModal()"
+                            class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
+                      <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-plus"></use>
+                      </svg>
+                      Create First Type
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+            @for (type of movementService.movementTypes(); track type.id) {
+              <tr class="table-row border-b border-gray-200 dark:border-gray-700">
+                <td class="py-4 text-text-light dark:text-text-dark font-semibold">{{ type.name }}</td>
+                <td class="py-4 text-text-light dark:text-text-dark">{{ type.description || 'No description' }}</td>
+                <td class="py-4">
+                  <span class="category-badge {{ getCategoryClass(type.category) }}">
+                    {{ getCategoryLabel(type.category) }}
+                  </span>
+                </td>
+                <td class="py-4">
+                  <span class="status-badge {{ type.isActive ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300' }}">
+                    {{ type.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="py-4 text-text-light dark:text-text-dark font-mono">
+                  {{ getUsageCount(type.id!) }}
+                </td>
+                <td class="py-4">
+                  <div class="flex gap-2">
+                    <button type="button" 
+                            (click)="openEditModal(type)" 
+                            class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300" 
+                            aria-label="Edit movement type">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-edit"></use>
+                      </svg>
+                    </button>
+                    <button type="button" 
+                            (click)="toggleTypeStatus(type)" 
+                            [class]="type.isActive ? 'text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-300' : 'text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300'"
+                            [attr.aria-label]="type.isActive ? 'Deactivate movement type' : 'Activate movement type'">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use [attr.href]="type.isActive ? 'assets/icons/sprite.svg#icon-pause' : 'assets/icons/sprite.svg#icon-play'"></use>
+                      </svg>
+                    </button>
+                    <button type="button" 
+                            (click)="deleteType(type)" 
+                            class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300" 
+                            aria-label="Delete movement type">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-trash"></use>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Movement Type Modal -->
+@if (showModal()) {
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4" style="background-color: #ffffff;">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold text-text-light dark:text-text-dark">
+        {{ editingType() ? 'Edit Movement Type' : 'Create Movement Type' }}
+      </h3>
+      <button type="button" 
+              (click)="closeModal()"
+              class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-x"></use>
+        </svg>
+      </button>
+    </div>
+    
+    <form [formGroup]="typeForm" (ngSubmit)="saveType()" class="space-y-4">
+      <div>
+        <label for="name" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Name *</label>
+        <input id="name" type="text" formControlName="name" 
+               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+               placeholder="e.g., Cash Sale, Credit Card Payment, Cash Withdrawal">
+      </div>
+      
+      <div>
+        <label for="description" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Description</label>
+        <textarea id="description" formControlName="description" rows="3"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                  placeholder="Description of the movement type"></textarea>
+      </div>
+      
+      <div>
+        <label for="category" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Category *</label>
+        <select id="category" formControlName="category" 
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white">
+          <option value="">Select Category</option>
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+          <option value="transfer">Transfer</option>
+        </select>
+      </div>
+      
+      <div class="flex items-center">
+        <input type="checkbox" formControlName="isActive" id="isActive"
+               class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+        <label for="isActive" class="ml-2 block text-sm text-text-light dark:text-text-dark">
+          Active
+        </label>
+      </div>
+      
+      <div class="flex justify-end gap-3 pt-4">
+        <button type="button" (click)="closeModal()" 
+                class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="!typeForm.valid || movementService.loading()"
+                class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ editingType() ? 'Update' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}

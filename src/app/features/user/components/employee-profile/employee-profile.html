@@ -1,0 +1,45 @@
+<div class="max-w-xl w-full mx-auto bg-secondary-light dark:bg-secondary-dark rounded-2xl shadow-lg p-5 flex flex-col items-center border border-gray-200 dark:border-gray-800">
+  @if (employee().photo) {
+    <img
+      [src]="employee().photo"
+      alt="Photo of {{ employee().firstName }} {{ employee().lastName }}"
+      class="w-20 h-20 rounded-full object-cover mb-4 shadow-lg border-2 border-white dark:border-gray-800"
+    />
+  } @else {
+    <div class="w-20 h-20 rounded-full bg-primary-500 flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg">
+       {{ (employee().firstName ?? '').charAt(0) }}{{ (employee().lastName ?? '').charAt(0) }}
+    </div>
+  }
+  <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">{{ employee().firstName }} {{ employee().lastName }}</h2>
+  <p class="text-gray-500 dark:text-gray-300 mb-4">{{ employee().email }}</p>
+  <div class="w-full grid grid-cols-2 gap-x-8 gap-y-4 text-base">
+    <span class="font-medium text-left">Name:</span>
+    <span>{{ employee().firstName }} {{ employee().lastName }}</span>
+    <span class="font-medium text-left">Phone:</span>
+    <span>{{ employee().phone }}</span>
+    <span class="font-medium text-left">Email:</span>
+    <span>{{ employee().email }}</span>
+    <span class="font-medium text-left">Start Date:</span>
+    <span>{{ employee().startDate }}</span>
+    <span class="font-medium text-left">Birth Date:</span>
+    <span>{{ employee().birthDate }}</span>
+    <span class="font-medium text-left">End Date:</span>
+    <span>{{ employee().endDate || '-' }}</span>
+
+    <!-- <span class="font-medium text-left">Created:</span>
+    <span>{{ employee(). }}</span>
+    <span class="font-medium text-left">Updated:</span>
+    <span>{{ employee().updated_at }}</span> -->
+    <span class="font-medium text-left">Status:</span>
+    <span>
+  @if (employee().status === 1) {
+    <span class="text-green-600 font-semibold">Active</span>
+  } @else if (employee().status === 0) {
+    <span class="text-red-600 font-semibold">Inactive</span>
+  } @else {
+    <span class="text-gray-500 italic">Unknown</span>
+  }
+</span>
+
+  </div>
+</div>

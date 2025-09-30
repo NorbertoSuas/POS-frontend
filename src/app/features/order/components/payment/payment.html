@@ -1,0 +1,116 @@
+<section class="rounded-2xl">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Sección izquierda: Métodos de pago y formulario -->
+  <section class="lg:col-span-5 space-y-6">
+      <!-- Métodos de pago -->
+      <div class="space-y-3">
+        <h2 class="text-lg font-semibold">Método de Pago</h2>
+        @for(paymentMethod of paymentMethods; track paymentMethod.id) {
+          <label class="cursor-pointer block"
+            (click)="selectPaymentMethod(paymentMethod.name)"
+          >
+          <input
+            type="radio"
+            name="payment"
+            [value]="paymentMethod.name"
+            class="peer hidden"
+            [checked]="paymentMethodSelected() === paymentMethod.name"
+          />
+          <div
+            class="p-2 border-1 rounded-xl flex justify-between items-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-primary-50 dark:peer-checked:bg-primary-900/30 dark:peer-checked:border-primary-600"
+          >
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center dark:bg-primary-900/50"
+              >
+                <svg class="w-5 h-5">
+                  <use [attr.href]="getIconHref(paymentMethod.icon)"></use>
+                </svg>
+              </div>
+              <span class="font-medium">{{paymentMethod.name}}</span>
+            </div>
+          </div>
+        </label>
+        }
+
+      </div>
+
+      <!-- Información de facturación -->
+  <section class="space-y-4">
+        <!-- Tipo de comprobante -->
+        <div>
+          <label class="block text-sm font-medium mb-2"
+            >Tipo de Comprobante</label
+          >
+          <select
+            class="select w-full border rounded-lg px-3 py-2 border-text-light dark:border-text-dark focus:outline-none focus:ring-primary focus:border-primary"
+            [value]="receiptTypeSelected()"
+            (change)="selectReceiptType($any($event.target).value)"
+          >
+          @for(receiptType of receiptTypes; track receiptType.id) {
+            <option [value]="receiptType.name">{{receiptType.name}}</option>
+          }
+          </select>
+        </div>
+
+        <!-- Cliente -->
+        <div>
+          <label class="block text-sm font-medium mb-2">Cliente</label>
+          <div class="relative">
+            <input
+              type="text"
+              class="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary"
+              [value]="customer()"
+              (input)="customer.set($any($event.target).value)"
+            />
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Separador visual -->
+    <div class="flex justify-center lg:block lg:col-span-1">
+      <div
+        class="h-1 w-16 bg-gray-200 my-4 lg:h-full lg:w-1 lg:my-0 lg:mx-auto dark:bg-gray-700"
+      ></div>
+    </div>
+
+    <!-- Sección derecha: Total -->
+    <section class="lg:col-span-6 flex flex-col justify-center">
+      <div class="text-center p-4">
+        <p class="mb-2">Total a pagar</p>
+        <div class="font-bold text-primary-500">
+          <span class="text-2xl sm:text-4xl md:text-5xl lg:text-7xl ml-1"
+            >{{currency.symbol}} </span
+          >
+          <span class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl">{{integerPart}}</span>
+          <span class="text-3xl sm:text-5xl md:text-6xl lg:text-7xl">,{{decimalPart}}</span>
+          
+        </div>
+        <div class="mt-4 text-sm">
+          <p>Incluye impuestos</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer con botones -->
+  <footer
+    class="mt-8 pt-6 border-t border-gray-200 flex flex-col-reverse sm:flex-row justify-between gap-3 dark:border-gray-700"
+  >
+    <button
+      class="btn btn-lg w-full sm:w-auto gap-2 dark:bg-secondary-light dark:text-text-light"
+    >
+      <i class="fas fa-times"></i>
+      Cancelar
+    </button>
+    <button class="btn btn-primary btn-lg w-full sm:w-auto gap-2"
+      (click)="paymentConfirm()"
+    >
+      <svg class="w-5 h-5">
+        <use [attr.href]="getIconHref('circle-check')"></use>
+      </svg>
+      Confirmar Pago
+    </button>
+  </footer>
+</section>

@@ -1,0 +1,129 @@
+<div class="p-6 min-h-screen" style="background-color: var(--bg-primary);">
+  <div class="card mb-8">
+    <div class="flex items-center mb-4">
+      <div class="bg-yellow-500 p-3 rounded-lg mr-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold" style="color: var(--text-primary);">Audit Management</h1>
+        <p class="mt-1" style="color: var(--text-secondary);">Monitor and track all system activities and changes</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="p-6 border-b" style="border-color: var(--border-primary);">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-semibold" style="color: var(--text-primary);">Audit Logs</h2>
+        <div class="flex gap-2">
+          <button 
+            class="btn btn-export" 
+            (click)="exportAuditLogs('csv')"
+            [disabled]="loading() || total() === 0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Export
+          </button>
+          <button 
+            class="btn btn-primary" 
+            (click)="openCreateModal()"
+            [disabled]="loading()">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            + Create Add Audit Log
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="p-6">
+      <app-audit-log-filters
+        [currentFilters]="currentFilters()"
+        (filtersChange)="onFiltersChange($event)">
+      </app-audit-log-filters>
+    </div>
+
+    <!-- Audit logs table -->
+    @if (showTable()) {
+      <div class="p-6">
+        <div class="overflow-x-auto">
+          <app-audit-log-table
+            [auditLogs]="auditLogs()"
+            [loading]="loading()"
+            (editAuditLog)="openEditModal($event)"
+            (deleteAuditLog)="onDeleteAuditLog($event)">
+          </app-audit-log-table>
+        </div>
+      </div>
+    }
+
+    <!-- Empty state -->
+    @if (showEmptyState()) {
+      <div class="p-6">
+        <div class="text-center py-12">
+          <div class="p-6 rounded-full mb-4 inline-block empty-state-icon" style="background-color: #fef3c7;">
+            <svg class="w-12 h-12 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2" style="color: var(--text-primary);">No audit logs found</h3>
+          <p class="mb-4" style="color: var(--text-secondary);">Add your first audit log to get started</p>
+          <button 
+            class="btn btn-primary" 
+            (click)="openCreateModal()">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            + Create First Audit Log
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Loading state -->
+    @if (loading()) {
+      <div class="p-6">
+        <div class="text-center py-12">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto"></div>
+          <p class="mt-4" style="color: var(--text-secondary);">Loading audit logs...</p>
+        </div>
+      </div>
+    }
+
+    <!-- Pagination -->
+    @if (showPagination()) {
+      <div class="p-6 border-t" style="border-color: var(--border-primary);">
+        <app-pagination
+          [currentPage]="currentPage()"
+          [totalItems]="total()"
+          [pageSize]="pageSize()"
+          [pageSizeOptions]="[10, 20, 50, 100]"
+          (pageChange)="onPageChange($event)"
+          (pageSizeChange)="onPageSizeChange($event)">
+        </app-pagination>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal to create new log -->
+<app-create-audit-log-modal
+  [isOpen]="showCreateModal()"
+  (close)="closeCreateModal()"
+  (createAuditLog)="onCreateAuditLog($event)">
+</app-create-audit-log-modal>
+
+<!-- Modal to edit log -->
+@if (selectedAuditLog()) {
+  <app-edit-audit-log-modal
+    [isOpen]="showEditModal()"
+    [auditLog]="selectedAuditLog()!"
+    (close)="closeEditModal()"
+    (updateAuditLog)="onUpdateAuditLog($event)">
+  </app-edit-audit-log-modal>
+}

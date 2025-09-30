@@ -1,0 +1,117 @@
+<div class="audit-filters-container" [formGroup]="filtersForm">
+  <!-- Indicador de filtros activos -->
+  @if (hasActiveFilters()) {
+    <div class="active-filters-indicator">
+      <div class="indicator-content">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+        </svg>
+        <span>Active filters: {{ activeFiltersCount() }}</span>
+      </div>
+    </div>
+  }
+
+  <!-- Basic filters always visible -->
+  <div class="basic-filters">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="action" class="filter-label">Action</label>
+        <select id="action" formControlName="action" class="filter-select">
+          <option value="">All actions</option>
+          @for (action of actionOptions; track action) {
+            <option [value]="action">{{ action }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="entityType" class="filter-label">Entity Type</label>
+        <select id="entityType" formControlName="entityType" class="filter-select">
+          <option value="">All types</option>
+          @for (entityType of entityTypeOptions; track entityType) {
+            <option [value]="entityType">{{ entityType }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="startDate" class="filter-label">Start Date</label>
+        <input 
+          type="date" 
+          id="startDate" 
+          formControlName="startDate" 
+          class="filter-input">
+      </div>
+
+      <div class="filter-group">
+        <label for="endDate" class="filter-label">End Date</label>
+        <input 
+          type="date" 
+          id="endDate" 
+          formControlName="endDate" 
+          class="filter-input">
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button 
+        type="button" 
+        class="btn-advanced-filters"
+        (click)="toggleAdvancedFilters()">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        {{ showAdvancedFilters() ? 'Hide' : 'Show' }} Advanced Filters
+      </button>
+
+      <div class="action-buttons">
+        <button 
+          type="button" 
+          class="btn btn-secondary btn-sm"
+          (click)="clearFilters()">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          Clear
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary btn-sm"
+          (click)="applyFilters()">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          Apply Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros avanzados (colapsables) -->
+  @if (showAdvancedFilters()) {
+    <div class="advanced-filters">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="userId" class="filter-label">User ID</label>
+        <input 
+          type="number" 
+          id="userId" 
+          formControlName="userId" 
+          placeholder="User ID"
+          class="filter-input">
+      </div>
+
+      <div class="filter-group">
+        <label for="entityId" class="filter-label">Entity ID</label>
+        <input 
+          type="number" 
+          id="entityId" 
+          formControlName="entityId" 
+          placeholder="Entity ID"
+          class="filter-input">
+      </div>
+    </div>
+  </div>
+  }
+</div>

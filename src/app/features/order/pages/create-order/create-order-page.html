@@ -1,0 +1,272 @@
+<div class="grid grid-cols-12 w-full h-full">
+  <!--PRODUCTS-->
+  <div class="col-span-8 flex flex-col">
+    <!--tipo de productos-->
+    <div class="p-2">
+      <div class="join">
+        <input
+          class="join-item btn"
+          type="radio"
+          name="options"
+          aria-label="todos"
+          [checked]="selectedFilter() === 'all'"
+          (change)="setFilter('all')">
+
+        @for (productType of productTypes(); track productType.id) {
+        <input
+          class="join-item btn"
+          type="radio"
+          name="options"
+          [attr.aria-label]="productType.name"
+          [checked]="selectedFilter() === productType.id"
+          (change)="setFilter(productType.id!)">
+        }
+      </div>
+    </div>
+    <!--productos-->
+    <div class="h-[calc(100vh-150px)] overflow-y-auto pr-0">
+      <div
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 p-2"
+      >
+        @for (item of filteredProductItems(); track item.id) {
+        <div
+          (click)="selectedProductItems(item)"
+          class="card w-full h-50 p-0.5 border-b-2 border-primary-500 flex flex-col cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-150 relative"
+        >
+          <!-- Indicador de cantidad -->
+          @if (selectedProductQuantities().has(item.productId)) {
+          <span
+            class="absolute top-1 right-1 badge badge-primary rounded-full w-7 h-7 p-0 flex items-center justify-center text-white font-bold shadow-lg z-10"
+          >
+            {{ selectedProductQuantities().get(item.productId) }}
+          </span>
+          }
+
+          <figure class="h-28 overflow-hidden">
+            <img
+              [src]="item.productImage || 'assets/images/placeholder.png'"
+              alt="Producto"
+              class="object-cover w-full h-full"
+              blurImage>
+          </figure>
+          <div
+            class="card-body px-2 py-1 flex flex-col justify-between flex-grow"
+          >
+            <h2 class="card-title text-sm font-semibold leading-tight">
+              {{ item.productName }}
+            </h2>
+            <div class="text-right">
+              <p class="text-sm font-bold">
+                {{ currency.symbol }} {{ item.price | number : "1.2-2" }}
+              </p>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+  <!--REGISTRADORA-->
+  <div
+    class="col-span-4 text-text-light bg-primary-light dark:bg-primary-dark dark:text-text-dark flex flex-col border-r overflow-hidden h-full"
+  >
+    <!-- 1) Order Lines -->
+    <ul class="flex-grow overflow-y-auto space-y-1 mt-2">
+      @if (listProductItemsSelected().length === 0) {
+      <li
+        class="flex flex-col items-center justify-center flex-grow h-full py-8"
+      >
+        <div class="flex flex-col items-center justify-center gap-4">
+          <svg class="w-20 h-20 text-gray-500 dark:text-gray-500">
+            <use [attr.href]="getIconHref('shopping-cart')"></use>
+          </svg>
+          <h3
+            class="w-3/4 mt-3 text-center text-lg font-medium text-gray-500 dark:text-gray-400"
+          >
+            Comience a agregar productos
+          </h3>
+        </div>
+      </li>
+      } @else { @for (productItemSelected of listProductItemsSelected(); track
+      productItemSelected.cartItemId) {
+      <li
+        class="flex items-center py-1 px-2 rounded-xs shadow-sm cursor-pointer border-l-4 border-primary-500"
+        [class]="
+          selectedCardProductItemId() === productItemSelected.cartItemId
+            ? 'bg-primary-500/50'
+            : ''
+        "
+        (click)="selectProductFromCart(productItemSelected)"
+      >
+        <div class="font-semibold mr-3 flex-none min-w-6">
+          {{ productItemSelected.quantity }}
+        </div>
+
+        <!-- contenedor central: importante flex-1 min-w-0 -->
+        <div class="flex flex-col flex-1 min-w-0">
+          <span class="font-medium">
+            {{ productItemSelected.productName }}
+          </span>
+
+          <!-- Extras: truncate + text-xs para que no crezca -->
+          @if (productItemSelected.selectedExtras?.length) {
+          <span
+            class="text-sm italic text-gray-500 truncate whitespace-nowrap max-w-full"
+          >
+            - @for (extra of productItemSelected.selectedExtras; track extra.id)
+            {
+            <span class="inline-block align-middle">
+              {{ extra.name }}<span class="text-gray-400">,</span>&nbsp;
+            </span>
+            }
+          </span>
+          }
+        </div>
+
+        <!-- price: flex-none para que no se encoja -->
+        <span class="font-bold ml-4 flex-none whitespace-nowrap">
+          {{ currency.symbol }}
+          {{ getProductTotalPrice(productItemSelected) | number : "1.2-2" }}
+        </span>
+      </li>
+
+      } }
+    </ul>
+
+    <!-- 2) Order Summary -->
+    <div class="border-t pt-4 space-y-1 p-3">
+      <div class="flex justify-between text-sm text-gray-500">
+        <span>Impuestos</span>
+        <span>{{ currency.symbol }} {{ totalTax() | number : "1.2-2" }}</span>
+      </div>
+      <div class="flex justify-between text-lg font-bold">
+        <span>Total</span>
+        <span>{{ currency.symbol }} {{ totalPrice() | number : "1.2-2" }}</span>
+      </div>
+    </div>
+
+    <!-- 3) Controls & Numpad -->
+    <div class="space-y-2 p-3">
+      <!-- a) Customer / Table / More -->
+      <div class="flex space-x-2">
+        <label
+          class="swap btn flex-1 bg-secondary-light text-text-light dark:bg-secondary-dark dark:text-text-dark text-lg"
+        >
+          <input type="checkbox" checked (change)="toggleOrderType($event)">
+          <span class="swap-on">{{ orderTypes()[0].name }}</span>
+          <span class="swap-off">{{ orderTypes()[1].name }}</span>
+        </label>
+        <button
+          type="button"
+          class="btn bg-secondary-light text-text-light dark:bg-secondary-dark dark:text-text-dark text-lg"
+        >
+          M-0
+        </button>
+        <button
+          type="button"
+          class="btn ml-auto bg-secondary-light text-text-light dark:bg-secondary-dark dark:text-text-dark text-lg"
+          aria-label="More options"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v.01M12 12v.01M12 18v.01"
+            />
+          </svg>
+        </button>
+      </div>
+      <!-- a) NUMPAD 3X3 -->
+      <div class="grid grid-cols-4 gap-1 auto-rows-[3rem]">
+        <div class="col-span-3 grid grid-cols-3 gap-1 auto-rows-[3rem]">
+          @for (n of NUMPAD_KEYS; track n) {
+          <button
+            type="button"
+            class="btn w-full h-full flex items-center justify-center bg-secondary-light text-text-light dark:bg-secondary-dark dark:text-text-dark text-lg"
+            (click)="pressNumpadKey(n.toString())"
+          >
+            {{ n }}
+          </button>
+          }
+          <button
+            type="button"
+            class="btn w-full h-full flex items-center justify-center bg-secondary-light text-text-light dark:bg-secondary-dark dark:text-text-dark text-lg"
+          >
+            ,
+          </button>
+          <button
+            type="button"
+            class="btn w-full h-full flex items-center justify-center bg-secondary-light text-text-light dark:bg-secondary-dark dark:text-text-dark text-lg"
+            (click)="pressNumpadKey('0')"
+          >
+            0
+          </button>
+          <button
+            type="button"
+            (click)="removeOrResetSelectedCartProduct()"
+            class="btn btn-error w-full h-full flex items-center justify-center text-lg dark:btn-outline"
+          >
+            ⌫
+          </button>
+        </div>
+        <button
+          type="button"
+          class="btn w-full h-full col-start-4 row-start-1 bg-secondary-light text-text-light dark:bg-secondary-dark dark:text-text-dark text-lg"
+        >
+          Nota
+        </button>
+        <button
+          type="button"
+          class="btn btn-warning w-full h-full col-start-4 row-start-2 text-lg dark:btn-outline"
+          (click)="pressAllClear()"
+        >
+          AC
+        </button>
+        <!-- Ordenar ocupa las filas 3 y 4 de la columna 4 -->
+        <button
+          type="button"
+          class="btn btn-success col-start-4 row-start-3 row-span-2 w-full h-full text-lg dark:btn-outline"
+          [disabled]="totalPrice() === 0"
+        >
+          Ordenar
+        </button>
+      </div>
+    </div>
+    <!-- c) Pago -->
+    <button
+      type="button"
+      class="btn btn-primary w-full mt-2 text-lg"
+      [disabled]="totalPrice() === 0"
+      (click)="openPaymentModal()"
+    >
+      Pago
+    </button>
+  </div>
+</div>
+@if (modalService.isOpen('product-extras')) {
+<app-modal [type]="'product-extras'">
+  <app-extras-select
+    [productExtras]="modalService.modalData()"
+    (selectedProductExtras)="saveProductExtras($event)">
+  </app-extras-select>
+</app-modal>
+} @if (modalService.isOpen('payment')) {
+<app-modal [type]="'payment'">
+  @if (newOrder()) {
+  <app-payment [order]="newOrder()" (newSaleOrder)="saveOrderSale($event)">
+  </app-payment>
+  }
+</app-modal>
+} @if (modalService.isOpen('payment-confirmed')) {
+<app-modal [type]="'payment-confirmed'">
+  <app-payment-confirmed [saleOrder]="modalService.modalData()">
+  </app-payment-confirmed>
+</app-modal>
+}

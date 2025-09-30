@@ -1,0 +1,82 @@
+<div class="p-6 min-h-screen cash-register-landing-bg">
+  <!-- Header Section -->
+  <div class="card mb-8">
+    <div class="flex items-center mb-4">
+      <div class="bg-emerald-500 p-3 rounded-lg mr-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-circle-dollar-sign"></use>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold cash-register-title">Cash Register System</h1>
+        <p class="cash-register-subtitle mt-1">Welcome to the cash register management system</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Section -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div>
+      <app-cash-register-nav></app-cash-register-nav>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="card">
+      <div class="p-6">
+        <h2 class="text-xl font-semibold cash-register-title mb-4">Quick Overview</h2>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <span class="cash-register-subtitle">Total Cash Registers</span>
+            <span class="font-semibold cash-register-title">0</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <span class="cash-register-subtitle">Active Sessions</span>
+            <span class="font-semibold cash-register-title">0</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <span class="cash-register-subtitle">Available</span>
+            <span class="font-semibold cash-register-title">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Getting Started Section -->
+  <div class="card mt-8">
+    <div class="p-6">
+      <h2 class="text-xl font-semibold cash-register-title mb-4">Getting Started</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="text-center">
+          <div class="bg-blue-100 dark:bg-blue-900/20 p-4 rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+            <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use href="assets/icons/sprite.svg#icon-plus"></use>
+            </svg>
+          </div>
+          <h3 class="font-medium cash-register-title mb-2">1. Create Cash Register</h3>
+          <p class="text-sm cash-register-subtitle">Start by creating your first cash register</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="bg-green-100 dark:bg-green-900/20 p-4 rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+            <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use href="assets/icons/sprite.svg#icon-play"></use>
+            </svg>
+          </div>
+          <h3 class="font-medium cash-register-title mb-2">2. Open Session</h3>
+          <p class="text-sm cash-register-subtitle">Open a session to start cash operations</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="bg-emerald-100 dark:bg-emerald-900/20 p-4 rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+            <svg class="w-8 h-8 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use href="assets/icons/sprite.svg#icon-chart-pie"></use>
+            </svg>
+          </div>
+          <h3 class="font-medium cash-register-title mb-2">3. Monitor & Manage</h3>
+          <p class="text-sm cash-register-subtitle">Track sessions and manage operations</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

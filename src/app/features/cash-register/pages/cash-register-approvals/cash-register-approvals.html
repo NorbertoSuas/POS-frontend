@@ -1,0 +1,654 @@
+<div class="approvals-container">
+  <!-- Header Section -->
+  <div class="approvals-header">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <div class="stats-icon yellow mr-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-shield-check"></use>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold text-text-light dark:text-text-dark mb-2">Approval Management</h1>
+          <p class="text-gray-600 dark:text-gray-300 text-lg">Manage approval workflows, discrepancies, and business rules</p>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button 
+          (click)="refreshApprovals()"
+          class="btn-outline">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-refresh-cw"></use>
+          </svg>
+          Refresh
+        </button>
+        <button 
+          (click)="exportApprovals()"
+          class="btn-outline">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-download"></use>
+          </svg>
+          Export
+        </button>
+        <button 
+          (click)="openRuleModal()"
+          class="btn-primary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-plus"></use>
+          </svg>
+          New Rule
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon yellow">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-clock"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Pending Approvals</p>
+          <p class="stats-value">{{ approvalService.pendingApprovals().length }}</p>
+          <p class="stats-subtitle">Awaiting review</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon red">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-exclamation-triangle"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">High Priority</p>
+          <p class="stats-value">{{ approvalService.highPriorityApprovals().length }}</p>
+          <p class="stats-subtitle">Urgent attention</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon blue">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-cog"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Active Rules</p>
+          <p class="stats-value">{{ approvalService.activeApprovalRules().length }}</p>
+          <p class="stats-subtitle">Business rules</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon orange">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-exclamation-circle"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Pending Discrepancies</p>
+          <p class="stats-value">{{ approvalService.pendingDiscrepancies().length }}</p>
+          <p class="stats-subtitle">Need resolution</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="approval-tabs bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
+    <div class="border-b border-gray-200 dark:border-gray-700">
+      <nav class="flex space-x-8 px-6" aria-label="Tabs">
+        <button type="button" 
+                (click)="setActiveTab('requests')"
+                [class]="activeTab === 'requests' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-clipboard-list"></use>
+          </svg>
+          Approval Requests
+          @if (approvalService.pendingApprovals().length > 0) {
+            <span class="ml-2 bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300 text-xs font-medium px-2 py-0.5 rounded-full">
+              {{ approvalService.pendingApprovals().length }}
+            </span>
+          }
+        </button>
+        <button type="button" 
+                (click)="setActiveTab('rules')"
+                [class]="activeTab === 'rules' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-cog"></use>
+          </svg>
+          Approval Rules
+        </button>
+        <button type="button" 
+                (click)="setActiveTab('discrepancies')"
+                [class]="activeTab === 'discrepancies' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-exclamation-triangle"></use>
+          </svg>
+          Discrepancies
+          @if (approvalService.pendingDiscrepancies().length > 0) {
+            <span class="ml-2 bg-orange-100 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 text-xs font-medium px-2 py-0.5 rounded-full">
+              {{ approvalService.pendingDiscrepancies().length }}
+            </span>
+          }
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Approval Requests Tab -->
+  @if (activeTab === 'requests') {
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Approval Requests</h2>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">{{ approvalService.approvalRequests().length }} requests found</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" 
+                    (click)="exportApprovalRequests()"
+                    class="btn-outline btn-sm">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <use href="assets/icons/sprite.svg#icon-download"></use>
+              </svg>
+              Export
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <use href="assets/icons/sprite.svg#icon-tag"></use>
+                  </svg>
+                  Type
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <use href="assets/icons/sprite.svg#icon-circle-dollar-sign"></use>
+                  </svg>
+                  Cash Register
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <div class="flex items-center justify-end gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <use href="assets/icons/sprite.svg#icon-dollar-sign"></use>
+                  </svg>
+                  Amount
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <use href="assets/icons/sprite.svg#icon-file-text"></use>
+                  </svg>
+                  Description
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <div class="flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <use href="assets/icons/sprite.svg#icon-exclamation-triangle"></use>
+                  </svg>
+                  Priority
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <use href="assets/icons/sprite.svg#icon-user"></use>
+                  </svg>
+                  Requested By
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                  </svg>
+                  Requested At
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <div class="flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <use href="assets/icons/sprite.svg#icon-clock"></use>
+                  </svg>
+                  Status
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (approvalService.loading()) {
+              <tr>
+                <td colspan="9" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="loading-spinner h-12 w-12"></div>
+                    <p class="mt-4 text-gray-600 dark:text-gray-300">Loading approval requests...</p>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (!approvalService.loading() && approvalService.approvalRequests().length === 0) {
+              <tr>
+                <td colspan="9" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="bg-amber-100 dark:bg-amber-900/20 p-6 rounded-full mb-4">
+                      <svg class="w-12 h-12 text-amber-500 dark:text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-clipboard-list"></use>
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2">No approval requests</h3>
+                    <p class="text-gray-600 dark:text-gray-300">All requests have been processed</p>
+                  </div>
+                </td>
+              </tr>
+            }
+            @for (request of approvalService.approvalRequests(); track request.id) {
+              <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ getTypeClass(request.type) }}">
+                    {{ request.type.replace('_', ' ').toUpperCase() }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-text-light dark:text-text-dark">
+                    {{ getCashRegisterName(request.cashRegisterId) }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right">
+                  <div class="text-sm font-bold text-text-light dark:text-text-dark">
+                    {{ formatCurrency(request.amount) }}
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-sm text-text-light dark:text-text-dark max-w-xs truncate">
+                    {{ request.description }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ getPriorityClass(request.priority) }}">
+                    {{ request.priority.toUpperCase() }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-text-light dark:text-text-dark">
+                    Employee {{ request.requestedBy }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-text-light dark:text-text-dark">
+                    {{ formatDate(request.requestedAt) }}
+                  </div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ getTimeFromDate(request.requestedAt) }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ getStatusClass(request.status) }}">
+                    {{ request.status.toUpperCase() }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center">
+                  @if (request.status === 'pending') {
+                    <button type="button" 
+                            (click)="openApprovalModal(request)"
+                            class="p-2 text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-colors" 
+                            aria-label="Review request">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-eye"></use>
+                      </svg>
+                    </button>
+                  } @else {
+                    <span class="text-gray-400 dark:text-gray-500">-</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- Approval Rules Tab -->
+  @if (activeTab === 'rules') {
+    <div class="card">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Approval Rules</h2>
+          <button type="button" 
+                  (click)="openRuleModal()"
+                  class="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700">
+            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use href="assets/icons/sprite.svg#icon-plus"></use>
+            </svg>
+            Add Rule
+          </button>
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="overflow-x-auto">
+          <table class="rules-table">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+                <th scope="col">Auto Approve</th>
+                <th scope="col">Manager Approval</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (rule of approvalService.approvalRules(); track rule.id) {
+                <tr class="table-row border-b border-gray-200 dark:border-gray-700">
+                  <td class="py-4 text-text-light dark:text-text-dark font-semibold">{{ rule.name }}</td>
+                  <td class="py-4">
+                    <span class="type-badge {{ getTypeClass(rule.type) }}">
+                      {{ rule.type.replace('_', ' ').toUpperCase() }}
+                    </span>
+                  </td>
+                  <td class="py-4 text-text-light dark:text-text-dark">{{ rule.description }}</td>
+                  <td class="py-4">
+                    <span class="status-badge {{ rule.autoApprove ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300' : 'bg-gray-100 dark:bg-gray-900/20 text-gray-800 dark:text-gray-300' }}">
+                      {{ rule.autoApprove ? 'YES' : 'NO' }}
+                    </span>
+                  </td>
+                  <td class="py-4">
+                    <span class="status-badge {{ rule.requireManagerApproval ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300' : 'bg-gray-100 dark:bg-gray-900/20 text-gray-800 dark:text-gray-300' }}">
+                      {{ rule.requireManagerApproval ? 'YES' : 'NO' }}
+                    </span>
+                  </td>
+                  <td class="py-4">
+                    <span class="status-badge {{ getStatusClass(rule.isActive ? 'active' : 'inactive') }}">
+                      {{ rule.isActive ? 'ACTIVE' : 'INACTIVE' }}
+                    </span>
+                  </td>
+                  <td class="py-4">
+                    <div class="flex gap-2">
+                      <button type="button" 
+                              (click)="openRuleModal(rule)" 
+                              class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300" 
+                              aria-label="Edit rule">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <use href="assets/icons/sprite.svg#icon-edit"></use>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Discrepancies Tab -->
+  @if (activeTab === 'discrepancies') {
+    <div class="card">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Discrepancy Reports</h2>
+          <button type="button" 
+                  (click)="exportDiscrepancyReports()"
+                  class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use href="assets/icons/sprite.svg#icon-download"></use>
+            </svg>
+            Export
+          </button>
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="overflow-x-auto">
+          <table class="discrepancies-table">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th scope="col">Session</th>
+                <th scope="col">Cash Register</th>
+                <th scope="col">Expected</th>
+                <th scope="col">Actual</th>
+                <th scope="col">Discrepancy</th>
+                <th scope="col">Severity</th>
+                <th scope="col">Status</th>
+                <th scope="col">Reported At</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (discrepancy of approvalService.discrepancyReports(); track discrepancy.id) {
+                <tr class="table-row border-b border-gray-200 dark:border-gray-700">
+                  <td class="py-4 text-text-light dark:text-text-dark font-semibold">
+                    {{ getSessionInfo(discrepancy.sessionId) }}
+                  </td>
+                  <td class="py-4 text-text-light dark:text-text-dark font-semibold">
+                    {{ getCashRegisterName(discrepancy.cashRegisterId) }}
+                  </td>
+                  <td class="py-4 text-text-light dark:text-text-dark">
+                    {{ formatCurrency(discrepancy.expectedBalance) }}
+                  </td>
+                  <td class="py-4 text-text-light dark:text-text-dark">
+                    {{ formatCurrency(discrepancy.actualBalance) }}
+                  </td>
+                  <td class="py-4 font-bold" [class]="getDiscrepancyClass(discrepancy.discrepancy)">
+                    {{ formatCurrency(discrepancy.discrepancy) }}
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                      ({{ discrepancy.discrepancyPercentage.toFixed(2) }}%)
+                    </div>
+                  </td>
+                  <td class="py-4">
+                    <span class="severity-badge {{ getDiscrepancySeverityClass(discrepancy.discrepancy, discrepancy.discrepancyPercentage) }}">
+                      {{ getDiscrepancySeverity(discrepancy.discrepancy, discrepancy.discrepancyPercentage) }}
+                    </span>
+                  </td>
+                  <td class="py-4">
+                    <span class="status-badge {{ getStatusClass(discrepancy.status) }}">
+                      {{ discrepancy.status.toUpperCase() }}
+                    </span>
+                  </td>
+                  <td class="py-4 text-text-light dark:text-text-dark">
+                    {{ formatDate(discrepancy.reportedAt) }}
+                  </td>
+                  <td class="py-4">
+                    @if (discrepancy.status === 'pending' || discrepancy.status === 'investigating') {
+                      <button type="button" 
+                              (click)="openDiscrepancyModal(discrepancy)"
+                              class="text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300" 
+                              aria-label="Resolve discrepancy">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <use href="assets/icons/sprite.svg#icon-check"></use>
+                        </svg>
+                      </button>
+                    } @else {
+                      <span class="text-gray-400 dark:text-gray-500">-</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Approval Modal -->
+<app-generic-modal 
+  [isOpen]="showApprovalModal" 
+  title="Review Approval Request"
+  (closed)="closeApprovalModal()">
+  
+  @if (selectedRequest) {
+    <div class="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
+      <h3 class="font-semibold text-amber-800 dark:text-amber-300 mb-2">Request Details</h3>
+      <p class="text-sm text-amber-700 dark:text-amber-200"><strong>Type:</strong> {{ selectedRequest.type.replace('_', ' ').toUpperCase() }}</p>
+      <p class="text-sm text-amber-700 dark:text-amber-200"><strong>Cash Register:</strong> {{ getCashRegisterName(selectedRequest.cashRegisterId) }}</p>
+      <p class="text-sm text-amber-700 dark:text-amber-200"><strong>Amount:</strong> {{ formatCurrency(selectedRequest.amount) }}</p>
+      <p class="text-sm text-amber-700 dark:text-amber-200"><strong>Description:</strong> {{ selectedRequest.description }}</p>
+      <p class="text-sm text-amber-700 dark:text-amber-200"><strong>Priority:</strong> {{ selectedRequest.priority.toUpperCase() }}</p>
+    </div>
+  }
+  
+  <form [formGroup]="approvalForm" class="space-y-4">
+    <div>
+      <label for="comments" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Comments *</label>
+      <textarea id="comments" formControlName="comments" rows="4"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-gray-700 dark:text-white"
+                placeholder="Add your comments about this request"></textarea>
+    </div>
+    
+    <div class="flex justify-end gap-3 pt-4">
+      <button type="button" (click)="closeApprovalModal()" 
+              class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+        Cancel
+      </button>
+      <button type="button" (click)="rejectRequest()" 
+              class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+        Reject
+      </button>
+      <button type="button" (click)="approveRequest()" 
+              class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+        Approve
+      </button>
+    </div>
+  </form>
+</app-generic-modal>
+
+<!-- Rule Modal -->
+<app-generic-modal 
+  [isOpen]="showRuleModal" 
+  [title]="selectedRule ? 'Edit Approval Rule' : 'Create Approval Rule'"
+  (closed)="closeRuleModal()">
+  
+  <form [formGroup]="ruleForm" (ngSubmit)="saveRule()" class="space-y-4">
+    <div>
+      <label for="name" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Name *</label>
+      <input id="name" type="text" formControlName="name" 
+             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-gray-700 dark:text-white"
+             placeholder="Rule name">
+    </div>
+    
+    <div>
+      <label for="description" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Description</label>
+      <textarea id="description" formControlName="description" rows="3"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-gray-700 dark:text-white"
+                placeholder="Rule description"></textarea>
+    </div>
+    
+    <div>
+      <label for="type" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Type *</label>
+      <select id="type" formControlName="type" 
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-gray-700 dark:text-white">
+        <option value="">Select Type</option>
+        <option value="session_close">Session Close</option>
+        <option value="discrepancy">Discrepancy</option>
+        <option value="large_movement">Large Movement</option>
+        <option value="negative_balance">Negative Balance</option>
+      </select>
+    </div>
+    
+    <div class="flex items-center">
+      <input type="checkbox" formControlName="autoApprove" id="autoApprove"
+             class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded">
+      <label for="autoApprove" class="ml-2 block text-sm text-text-light dark:text-text-dark">
+        Auto Approve
+      </label>
+    </div>
+    
+    <div class="flex items-center">
+      <input type="checkbox" formControlName="requireManagerApproval" id="requireManagerApproval"
+             class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded">
+      <label for="requireManagerApproval" class="ml-2 block text-sm text-text-light dark:text-text-dark">
+        Require Manager Approval
+      </label>
+    </div>
+    
+    <div class="flex items-center">
+      <input type="checkbox" formControlName="isActive" id="isActive"
+             class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded">
+      <label for="isActive" class="ml-2 block text-sm text-text-light dark:text-text-dark">
+        Active
+      </label>
+    </div>
+    
+    <div class="flex justify-end gap-3 pt-4">
+      <button type="button" (click)="closeRuleModal()" 
+              class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+        Cancel
+      </button>
+      <button type="submit" [disabled]="!ruleForm.valid"
+              class="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed">
+        {{ selectedRule ? 'Update' : 'Create' }}
+      </button>
+    </div>
+  </form>
+</app-generic-modal>
+
+<!-- Discrepancy Modal -->
+<app-generic-modal 
+  [isOpen]="showDiscrepancyModal" 
+  title="Resolve Discrepancy"
+  (closed)="closeDiscrepancyModal()">
+  
+  @if (selectedDiscrepancy) {
+    <div class="mb-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+      <h3 class="font-semibold text-orange-800 dark:text-orange-300 mb-2">Discrepancy Details</h3>
+      <p class="text-sm text-orange-700 dark:text-orange-200"><strong>Session:</strong> {{ getSessionInfo(selectedDiscrepancy.sessionId) }}</p>
+      <p class="text-sm text-orange-700 dark:text-orange-200"><strong>Cash Register:</strong> {{ getCashRegisterName(selectedDiscrepancy.cashRegisterId) }}</p>
+      <p class="text-sm text-orange-700 dark:text-orange-200"><strong>Expected:</strong> {{ formatCurrency(selectedDiscrepancy.expectedBalance) }}</p>
+      <p class="text-sm text-orange-700 dark:text-orange-200"><strong>Actual:</strong> {{ formatCurrency(selectedDiscrepancy.actualBalance) }}</p>
+      <p class="text-sm text-orange-700 dark:text-orange-200"><strong>Discrepancy:</strong> {{ formatCurrency(selectedDiscrepancy.discrepancy) }} ({{ selectedDiscrepancy.discrepancyPercentage.toFixed(2) }}%)</p>
+    </div>
+  }
+  
+  <form [formGroup]="discrepancyForm" (ngSubmit)="resolveDiscrepancy()" class="space-y-4">
+    <div>
+      <label for="resolution" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Resolution *</label>
+      <textarea id="resolution" formControlName="resolution" rows="4"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+                placeholder="Describe how this discrepancy was resolved"></textarea>
+    </div>
+    
+    <div class="flex justify-end gap-3 pt-4">
+      <button type="button" (click)="closeDiscrepancyModal()" 
+              class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+        Cancel
+      </button>
+      <button type="submit" [disabled]="!discrepancyForm.valid"
+              class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed">
+        Resolve
+      </button>
+    </div>
+  </form>
+</app-generic-modal>

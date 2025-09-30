@@ -1,0 +1,353 @@
+/* Cashier Dashboard - Following Project Architecture */
+
+/* Main container */
+.cashier-container {
+  background-color: var(--bg-secondary);
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+/* Header section */
+.cashier-header {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-primary);
+}
+
+/* Statistics cards */
+.stats-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-primary);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+  border-radius: 1rem 1rem 0 0;
+}
+
+.stats-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-secondary);
+}
+
+/* Stats icons */
+.stats-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.stats-icon.blue {
+  background-color: #3b82f6;
+}
+
+.stats-icon.green {
+  background-color: #22c55e;
+}
+
+.stats-icon.purple {
+  background-color: #8b5cf6;
+}
+
+.stats-icon.orange {
+  background-color: #f97316;
+}
+
+.stats-icon.emerald {
+  background-color: #10b981;
+}
+
+.stats-icon.red {
+  background-color: #ef4444;
+}
+
+/* Stats labels and values */
+.stats-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.stats-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.stats-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+/* Status indicator */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
+.status-active {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+@media (prefers-color-scheme: dark) {
+  .status-active {
+    background-color: #14532d;
+    color: #bbf7d0;
+  }
+}
+
+.status-active .status-dot {
+  background-color: #22c55e;
+}
+
+.status-inactive {
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+@media (prefers-color-scheme: dark) {
+  .status-inactive {
+    background-color: #7f1d1d;
+    color: #fecaca;
+  }
+}
+
+.status-inactive .status-dot {
+  background-color: #ef4444;
+}
+
+.status-pending {
+  background-color: #fefce8;
+  color: #a16207;
+}
+
+@media (prefers-color-scheme: dark) {
+  .status-pending {
+    background-color: #713f12;
+    color: #fde68a;
+  }
+}
+
+.status-pending .status-dot {
+  background-color: #eab308;
+}
+
+/* Card styles */
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-primary);
+  margin-bottom: 2rem;
+}
+
+/* Quick action cards */
+.quick-action-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-action-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.quick-action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-secondary);
+}
+
+.quick-action-card .stats-icon {
+  margin: 0 auto 1rem auto;
+}
+
+/* Action card colors */
+.action-green .quick-action-card::before {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.action-blue .quick-action-card::before {
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+}
+
+.action-orange .quick-action-card::before {
+  background: linear-gradient(90deg, #f97316, #ea580c);
+}
+
+.action-red .quick-action-card::before {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.action-purple .quick-action-card::before {
+  background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+}
+
+.action-gray .quick-action-card::before {
+  background: linear-gradient(90deg, #6b7280, #4b5563);
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-primary);
+}
+
+/* Form styles */
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+input, select, textarea {
+  transition: all 0.2s;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-primary);
+  border-radius: 0.375rem;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Button styles in modals */
+button {
+  transition: all 0.2s;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .cashier-container {
+    padding: 1rem;
+  }
+  
+  .cashier-header {
+    padding: 1.5rem;
+  }
+  
+  .cashier-header .flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  
+  .quick-action-card {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .cashier-header h1 {
+    font-size: 2rem;
+  }
+  
+  .cashier-header p {
+    font-size: 1rem;
+  }
+  
+  .stats-value {
+    font-size: 1.5rem;
+  }
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Dark mode enhancements */
+@media (prefers-color-scheme: dark) {
+  .quick-action-card:hover {
+    background-color: var(--bg-hover);
+  }
+  
+  .card:hover {
+    background-color: var(--bg-hover);
+  }
+}

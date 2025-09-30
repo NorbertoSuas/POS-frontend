@@ -1,0 +1,107 @@
+<userForm
+  [formGroup]="userForm"
+  novalidate
+  class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-2xl dark:bg-secondary-dark"
+>
+  <!-- Username -->
+  <div class="flex flex-col">
+    <label for="username" class="text-sm font-medium mb-1"> Username </label>
+    <input
+      id="username"
+      type="text"
+      formControlName="username"
+      class="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary"
+      [class.border-red-500]="
+        userForm.get('username')?.touched && userForm.get('username')?.invalid
+      "
+    />
+    @if (userForm.get('username')?.touched && userForm.get('username')?.invalid)
+    {
+    <p class="text-sm text-red-500 mt-1">Required field</p>
+    }
+  </div>
+
+  <!-- Password -->
+  <div class="flex flex-col">
+    <label for="password" class="text-sm font-medium mb-1"> Password </label>
+    <input
+      id="password"
+      type="password"
+      formControlName="password"
+      class="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary"
+      [class.border-red-500]="
+        userForm.get('password')?.touched && userForm.get('password')?.invalid
+      "
+    />
+    @if (userForm.get('password')?.touched && userForm.get('password')?.invalid)
+    {
+    <p class="text-sm text-red-500 mt-1">Required field</p>
+    }
+  </div>
+
+  <!-- Role -->
+  <div class="flex flex-col md:col-span-2">
+    <label for="role" class="text-sm font-medium mb-1"> Role </label>
+    <select
+      id="role"
+      formControlName="roleId"
+      class="select w-full border rounded-lg px-3 py-2 border-text-light dark:border-text-dark bg-primary-light dark:bg-secondary-dark focus:outline-none focus:ring-primary focus:border-primary"
+      [class.border-red-500]="
+        userForm.get('role')?.touched && userForm.get('role')?.invalid
+      "
+    >
+      <option value="" disabled selected>Select a role</option>
+      @for (role of roles(); track role.id;) {
+      <option [value]="role.id">{{ role.name }}</option>
+      }
+    </select>
+  </div>
+
+  <!--Employee-->
+  <div class="flex flex-col md:col-span-2">
+    <label for="role" class="text-sm font-medium mb-1"> Employee</label>
+    <app-employee-select
+    [initialEmployeeSelected]="f['employeeId'].value"
+      [employees]="employees()"
+      (employeeSelected)="onEmployeeSelected($event)"
+    >
+    </app-employee-select>
+    <!-- Control oculto para Reactive Forms -->
+    <input type="hidden" formControlName="employeeId" />
+  </div>
+
+  <!-- Save Button -->
+  <div class="md:col-span-2">
+    <button
+      type="button"
+      class="w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+      [disabled]="userForm.invalid || submitting()"
+      (click)="submit()"
+    >
+      @if (submitting()) {
+      <svg
+        class="animate-spin h-5 w-5 text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 
+              5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 
+              5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
+      Saving... } @else { Save }
+    </button>
+  </div>
+</userForm>

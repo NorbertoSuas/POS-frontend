@@ -1,0 +1,13 @@
+.button-export {
+   background-color: var(--color-secondary-light);
+   color: var(--color-text-light);
+}
+.button-export:hover {
+  transform: translateY(-1px) scale(1.01);
+  opacity: 0.8;
+  cursor: pointer;
+}
+.button-export:active {
+  box-shadow: 0 1px 2px 0 rgba(63,106,216,0.10);
+  transform: scale(0.98);
+}

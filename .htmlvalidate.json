@@ -1,0 +1,21 @@
+{
+  "rules": {
+    "attr-case": {
+      "style": "lowercase",
+      "ignore": [
+        "ngModel",
+        "ngIf", 
+        "ngFor",
+        "ngClass",
+        "ngSubmit",
+        "formGroup",
+        "formControlName",
+        "currentPage",
+        "totalItems",
+        "pageSize",
+        "pageChange",
+        "isOpen"
+      ]
+    }
+  }
+}

@@ -1,0 +1,335 @@
+/* ===== ESTILOS BASE ===== */
+.card {
+  background-color: var(--bg-card);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-primary);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+}
+
+/* ===== ESTILOS PARA BOTONES ===== */
+.btn-primary {
+  padding: 0.5rem 1rem;
+  background-color: var(--btn-primary-bg);
+  color: white;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--btn-primary-hover);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-export {
+  padding: 0.5rem 1rem;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-secondary);
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+  background-color: var(--btn-export-bg);
+}
+
+.btn-export:hover:not(:disabled) {
+  background-color: var(--btn-export-hover);
+}
+
+/* ===== ESTILOS PARA INPUTS ===== */
+.form-input, .form-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-secondary);
+  border-radius: 0.375rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.form-select {
+  background-color: var(--bg-secondary);
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--icon-primary);
+  box-shadow: 0 0 0 2px rgb(245 158 11 / 0.2);
+}
+
+/* ===== ESTILOS PARA LA TABLA ===== */
+.audit-table {
+  background-color: var(--bg-card);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-primary);
+  border: 1px solid var(--border-primary);
+}
+
+.audit-table th {
+  text-align: left;
+  color: var(--text-secondary);
+  font-weight: 500;
+  padding: 1rem 0;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-secondary);
+}
+
+.audit-table td {
+  padding: 1rem 0;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.audit-table tr:hover {
+  background-color: var(--bg-secondary);
+}
+
+/* ===== ESTILOS PARA BADGES ===== */
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge-update {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badge-login {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-delete {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-create {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+/* ===== DARK MODE STYLES ===== */
+.dark .badge-update {
+  background-color: #451a03;
+  color: #fbbf24;
+}
+
+.dark .badge-login {
+  background-color: rgb(30 64 175 / 0.2);
+  color: #93c5fd;
+}
+
+.dark .badge-delete {
+  background-color: #7f1d1d;
+  color: #fca5a5;
+}
+
+.dark .badge-create {
+  background-color: #14532d;
+  color: #86efac;
+}
+
+/* Ensure all elements have appropriate dark backgrounds */
+.dark .bg-yellow-100,
+.dark .bg-yellow-900\/20 {
+  background-color: #451a03 !important;
+}
+
+.dark .text-yellow-500,
+.dark .text-yellow-300 {
+  color: #fbbf24 !important;
+}
+
+
+
+/* Ensure filters have dark background */
+.dark .audit-filters-container {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-primary) !important;
+}
+
+.dark .filter-input,
+.dark .filter-select,
+.dark .form-input,
+.dark .form-select,
+.dark .form-textarea {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-secondary) !important;
+}
+
+.dark .filter-input:focus,
+.dark .filter-select:focus,
+.dark .form-input:focus,
+.dark .form-select:focus,
+.dark .form-textarea:focus {
+  border-color: var(--icon-primary) !important;
+  box-shadow: 0 0 0 2px rgb(245 158 11 / 0.3) !important;
+}
+
+.dark .filter-label,
+.dark .form-label {
+  color: var(--text-primary) !important;
+}
+
+/* Ensure table has appropriate contrast */
+.dark .audit-table th {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-bottom-color: var(--border-secondary) !important;
+}
+
+.dark .audit-table td {
+  color: var(--text-primary) !important;
+  border-bottom-color: var(--border-muted) !important;
+}
+
+.dark .audit-table tr:hover {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Ensure filter buttons have appropriate contrast */
+.dark .btn-advanced-filters {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+  border-color: var(--border-secondary) !important;
+}
+
+.dark .btn-advanced-filters:hover {
+  background-color: var(--border-secondary) !important;
+  border-color: var(--border-muted) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark .btn-secondary {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-secondary) !important;
+}
+
+.dark .btn-secondary:hover:not(:disabled) {
+  background-color: var(--border-secondary) !important;
+  border-color: var(--border-muted) !important;
+}
+
+/* Ensure modals have appropriate contrast */
+.dark .modal-content {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-primary) !important;
+}
+
+.dark .modal-header {
+  border-bottom-color: var(--border-primary) !important;
+}
+
+.dark .modal-footer {
+  border-top-color: var(--border-primary) !important;
+}
+
+/* Specific styles for empty state icon in dark mode */
+.dark .empty-state-icon {
+  background-color: #451a03 !important;
+}
+
+.dark .empty-state-icon svg {
+  color: #fbbf24 !important;
+}
+
+/* Estilos para el spinner de carga en modo oscuro */
+.dark .animate-spin {
+  border-color: var(--border-secondary) !important;
+}
+
+.dark .border-yellow-500 {
+  border-color: var(--icon-primary) !important;
+}
+
+.dark .border-b-2 {
+  border-bottom-width: 2px !important;
+}
+
+/* Styles for borders and separators in dark mode */
+.dark .border-gray-200 {
+  border-color: var(--border-primary) !important;
+}
+
+.dark .border-gray-700 {
+  border-color: var(--border-secondary) !important;
+}
+
+.dark .border-t {
+  border-top-width: 1px !important;
+}
+
+/* Ensure that texts have appropriate contrast */
+.dark .text-gray-600 {
+  color: var(--text-muted) !important;
+}
+
+.dark .text-gray-300 {
+  color: var(--text-secondary) !important;
+}
+
+.dark .text-text-light,
+.dark .text-text-dark {
+  color: var(--text-primary) !important;
+}
+
+/* Styles for buttons in dark mode */
+.dark .btn {
+  transition: all 0.2s ease;
+}
+
+.dark .btn:hover {
+  transform: translateY(-1px);
+}
+
+.dark .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Ensure action buttons have appropriate contrast */
+.dark .btn-edit {
+  color: #8b5cf6 !important;
+}
+
+.dark .btn-edit:hover {
+  color: #a78bfa !important;
+}
+
+.dark .btn-delete {
+  color: #ef4444 !important;
+}
+
+.dark .btn-delete:hover {
+  color: #f87171 !important;
+}
+
+/* Styles for main background in dark mode */
+.dark .bg-secondary-light,
+.dark .bg-secondary-dark {
+  background-color: var(--bg-primary) !important;
+}
+
+/* Ensure all elements have appropriate contrast */
+.dark * {
+  border-color: inherit;
+}
+
+/* Styles for specific elements that might not be covered */
+.dark .overflow-x-auto {
+  background-color: transparent !important;
+}
+
+.dark .text-center {
+  color: inherit;
+}

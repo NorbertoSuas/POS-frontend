@@ -1,0 +1,18 @@
+<header class="flex items-center justify-between px-4 py-2 border-b-2 dark:border-y-primary-dark bg-secondary-light text-text-light dark:bg-secondary-dark dark:text-text-dark border-primary-light">
+  <button (click)="toggleSidebar.emit()" class="text-2xl">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  </button>
+
+  <!-- Theme switch -->
+  <select
+    class="px-2 py-1 rounded text-sm bg-primary-light text-text-light dark:bg-primary-dark dark:text-text-dark "
+    [value]="currentTheme()"
+    (change)="onThemeChange($event)"
+  >
+    <option value="system">🖥️ System</option>
+    <option value="light">☀️ Light</option>
+    <option value="dark">🌙 Dark</option>
+  </select>
+</header>

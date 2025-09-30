@@ -1,0 +1,152 @@
+<div class="p-6 bg-secondary-light dark:bg-secondary-dark min-h-screen">
+  <div class="card mb-8">
+    <div class="flex items-center mb-4">
+      <div class="bg-teal-500 p-3 rounded-lg mr-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-archive"></use>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold text-text-light dark:text-text-dark">Storage Type Management</h1>
+        <p class="text-gray-600 dark:text-gray-300 mt-1">Manage storage types and their configurations</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Storage Types</h2>
+        <div class="flex gap-2">
+          <app-button-export 
+            [nameOfTable]="'Storage Types'" 
+            [data]="storageTypeService.storageTypes()">
+          </app-button-export>
+          <app-button-create [iconName]="'plus'" [label]="'Add Storage Type'" (click)="openCreateModal()"></app-button-create>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6">
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr class="border-b border-gray-200 dark:border-gray-700">
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Name</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Maximum Weight</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">New Products</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Status</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (storageTypeService.loading()) {
+              <tr>
+                <td colspan="5" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500"></div>
+                    <p class="mt-4 text-gray-600 dark:text-gray-300">Loading storage types...</p>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (!storageTypeService.loading() && storageTypeService.storageTypes().length === 0) {
+              <tr>
+                <td colspan="5" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="bg-teal-100 dark:bg-teal-900/20 p-6 rounded-full mb-4">
+                      <svg class="w-12 h-12 text-teal-500 dark:text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-archive"></use>
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2">No storage types found</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">Add your first storage type to get started</p>
+                    <app-button-create [iconName]="'plus'" [label]="'Create First Storage Type'" (click)="openCreateModal()"></app-button-create>
+                  </div>
+                </td>
+              </tr>
+            }
+            @for (storageType of storageTypeService.storageTypes(); track storageType.id) {
+              <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                <td class="py-4 text-text-light dark:text-text-dark font-semibold">{{ storageType.name }}</td>
+                <td class="py-4">
+                  <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300">
+                    {{ storageType.maximumWeight }}
+                  </span>
+                </td>
+                <td class="py-4">
+                  <span class="px-2 py-1 text-xs font-medium rounded-full" 
+                        [class]="storageType.allowNewProduct ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300'">
+                    {{ storageType.allowNewProduct ? 'Allowed' : 'Not Allowed' }}
+                  </span>
+                </td>
+                <td class="py-4">
+                  <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300">
+                    Active
+                  </span>
+                </td>
+                <td class="py-4">
+                  <div class="flex gap-2">
+                    <button type="button" (click)="openEditModal(storageType)" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300" aria-label="Edit storage type">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-edit"></use>
+                      </svg>
+                    </button>
+                    <button type="button" (click)="deleteStorageType(storageType)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300" aria-label="Delete storage type">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-trash"></use>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Storage Type Modal -->
+  <app-generic-modal 
+    [isOpen]="showModal" 
+    [title]="editingStorageType ? 'Edit Storage Type' : 'Create Storage Type'"
+    (closed)="closeModal()">
+    
+    <form [formGroup]="storageTypeForm" (ngSubmit)="saveStorageType()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Name *</label>
+        <input type="text" formControlName="name" 
+               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-white"
+               placeholder="e.g., Heavy Storage, Light Storage, Refrigerated">
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Maximum Weight *</label>
+        <input type="text" formControlName="maximumWeight" 
+               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-white"
+               placeholder="e.g., 100kg, 50lbs, 1000g">
+        <p class="text-xs text-gray-500 mt-1">Include the unit (kg, lbs, g, oz)</p>
+      </div>
+      
+      <div class="flex items-center">
+        <input type="checkbox" formControlName="allowNewProduct" id="allowNewProduct" 
+               class="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded">
+        <label for="allowNewProduct" class="ml-2 block text-sm text-text-light dark:text-text-dark">
+          Allow new products to be stored in this location
+        </label>
+      </div>
+      
+      <div class="flex justify-end gap-2 pt-4">
+        <button type="button" (click)="closeModal()" 
+                class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="!storageTypeForm.valid" 
+                class="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ editingStorageType ? 'Update' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </app-generic-modal>
+</div>

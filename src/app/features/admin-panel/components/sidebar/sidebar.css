@@ -1,0 +1,33 @@
+/* Sidebar Styles */
+aside {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Navigation */
+nav {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Log Out Button Container */
+.mt-auto {
+  margin-top: auto;
+}
+
+/* Log Out Button */
+button[class*="text-red-600"] {
+  font-weight: 500;
+}
+
+button[class*="text-red-600"]:hover {
+  font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  aside {
+    height: 100vh;
+  }
+}

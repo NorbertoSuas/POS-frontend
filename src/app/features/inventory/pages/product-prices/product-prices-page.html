@@ -1,0 +1,160 @@
+<div class="p-6 bg-secondary-light dark:bg-secondary-dark min-h-screen">
+  <div class="card mb-8">
+    <div class="flex items-center mb-4">
+      <div class="bg-teal-500 p-3 rounded-lg mr-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-box"></use>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold text-text-light dark:text-text-dark">Product Price Management</h1>
+        <p class="text-gray-600 dark:text-gray-300 mt-1">Manage product price assignments and validity periods</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Product Price Assignments</h2>
+        <div class="flex gap-2">
+          <app-button-export 
+            [nameOfTable]="'Product Prices'" 
+            [data]="productPrices()">
+          </app-button-export>
+          <app-button-create [iconName]="'plus'" [label]="'Add Price Assignment'" (click)="openCreateModal()"></app-button-create>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6">
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr class="border-b border-gray-200 dark:border-gray-700">
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Product</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Price Strategy</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Valid From</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Valid To</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Status</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (loading()) {
+              <tr>
+                <td colspan="6" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500"></div>
+                    <p class="mt-4 text-gray-600 dark:text-gray-300">Loading product prices...</p>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (!loading() && productPrices().length === 0) {
+              <tr>
+                <td colspan="6" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="bg-teal-100 dark:bg-teal-900/20 p-6 rounded-full mb-4">
+                      <svg class="w-12 h-12 text-teal-500 dark:text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-box"></use>
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2">No product price assignments found</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">Add your first product price assignment to get started</p>
+                    <app-button-create [iconName]="'plus'" [label]="'Create First Assignment'" (click)="openCreateModal()"></app-button-create>
+                  </div>
+                </td>
+              </tr>
+            }
+            @for (productPrice of productPrices(); track productPrice.id) {
+              <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                <td class="py-4 text-text-light dark:text-text-dark font-semibold">{{ getProductName(productPrice.productId) }}</td>
+                <td class="py-4 text-text-light dark:text-text-dark">{{ getPriceName(productPrice.priceId) }}</td>
+                <td class="py-4 text-text-light dark:text-text-dark">{{ formatDate(productPrice.validFrom) }}</td>
+                <td class="py-4 text-text-light dark:text-text-dark">{{ productPrice.validTo ? formatDate(productPrice.validTo) : 'No Expiry' }}</td>
+                <td class="py-4">
+                  <span class="px-2 py-1 text-xs font-medium rounded-full" 
+                        [class]="getValidityStatusClass(productPrice.validFrom, productPrice.validTo)">
+                    {{ getValidityStatus(productPrice.validFrom, productPrice.validTo) }}
+                  </span>
+                </td>
+                <td class="py-4">
+                  <div class="flex gap-2">
+                    <button type="button" (click)="openEditModal(productPrice)" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300" aria-label="Edit product price">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-edit"></use>
+                      </svg>
+                    </button>
+                    <button type="button" (click)="deleteProductPrice(productPrice)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300" aria-label="Delete product price">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-trash"></use>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Price Modal -->
+  <app-generic-modal 
+    [isOpen]="showModal()" 
+    [title]="editingProductPrice() ? 'Edit Product Price Assignment' : 'Create Product Price Assignment'"
+    (closed)="closeModal()">
+    
+    <form [formGroup]="productPriceForm" (ngSubmit)="saveProductPrice()" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Product *</label>
+          <select formcontrolname="productId" 
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-white">
+            <option value="">Select product</option>
+            @for (product of products(); track product.id) {
+              <option [value]="product.id">{{ product.name }}</option>
+            }
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Price Strategy *</label>
+          <select formcontrolname="priceId" 
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-white">
+            <option value="">Select price strategy</option>
+            @for (price of prices(); track price.id) {
+              <option [value]="price.id">{{ price.name }}</option>
+            }
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Valid From *</label>
+          <input type="date" formcontrolname="validFrom" 
+                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-white">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Valid To (Optional)</label>
+          <input type="date" formcontrolname="validTo" 
+                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-white">
+          <p class="text-xs text-gray-500 mt-1">Leave empty for no expiration</p>
+        </div>
+      </div>
+      
+      <div class="flex justify-end gap-2 pt-4">
+        <button type="button" (click)="closeModal()" 
+                class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="!productPriceForm.valid" 
+                class="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ editingProductPrice() ? 'Update' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </app-generic-modal>
+</div>

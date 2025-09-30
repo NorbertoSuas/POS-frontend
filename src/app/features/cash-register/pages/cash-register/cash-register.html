@@ -1,0 +1,252 @@
+<div class="dashboard-container">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <div class="stats-icon emerald mr-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-circle-dollar-sign"></use>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold text-text-light dark:text-text-dark mb-2">Cash Register Dashboard</h1>
+          <p class="text-gray-600 dark:text-gray-300 text-lg">Real-time overview of cash register operations and performance metrics</p>
+        </div>
+      </div>
+      <button 
+        (click)="refreshDashboard()"
+        class="btn-primary">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-refresh-cw"></use>
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Key Performance Indicators -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon blue">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-building"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Total Registers</p>
+          <p class="stats-value">{{ getTotalCashRegisters() }}</p>
+          <p class="stats-subtitle">{{ getActiveCashRegisters() }} active</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon green">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-check-circle"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Available</p>
+          <p class="stats-value">{{ getAvailableCashRegisters() }}</p>
+          <p class="stats-subtitle">{{ getInUseRegisters() }} in use</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon emerald">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-dollar-sign"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Total Balance</p>
+          <p class="stats-value">{{ formatCurrency(getTotalBalance()) }}</p>
+          <p class="stats-subtitle">Across all registers</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon purple">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-trending-up"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Avg Balance</p>
+          <p class="stats-value">{{ formatCurrency(getAverageBalance()) }}</p>
+          <p class="stats-subtitle">Per register</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="dashboard-header mb-8">
+    <div class="mb-6">
+      <h2 class="text-2xl font-bold text-text-light dark:text-text-dark mb-2">Quick Actions</h2>
+      <p class="text-gray-600 dark:text-gray-300">Common tasks and operations</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <button 
+        (click)="navigateToSessions()"
+        class="quick-action-card">
+        <div class="stats-icon blue mb-4 mx-auto">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-clock"></use>
+          </svg>
+        </div>
+        <h3 class="font-bold text-text-light dark:text-text-dark mb-2 text-lg">Manage Sessions</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-300">Open and close cash register sessions</p>
+      </button>
+
+      <button 
+        (click)="navigateToMovements()"
+        class="quick-action-card">
+        <div class="stats-icon green mb-4 mx-auto">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-arrow-right-left"></use>
+          </svg>
+        </div>
+        <h3 class="font-bold text-text-light dark:text-text-dark mb-2 text-lg">View Movements</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-300">Track cash movements and transactions</p>
+      </button>
+
+      <button 
+        (click)="navigateToReports()"
+        class="quick-action-card">
+        <div class="stats-icon purple mb-4 mx-auto">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-chart-bar"></use>
+          </svg>
+        </div>
+        <h3 class="font-bold text-text-light dark:text-text-dark mb-2 text-lg">Generate Reports</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-300">Create detailed reports and analytics</p>
+      </button>
+
+      <button 
+        (click)="navigateToApprovals()"
+        class="quick-action-card">
+        <div class="stats-icon emerald mb-4 mx-auto">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-shield-check"></use>
+          </svg>
+        </div>
+        <h3 class="font-bold text-text-light dark:text-text-dark mb-2 text-lg">Approvals</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-300">Review and approve transactions</p>
+      </button>
+    </div>
+  </div>
+
+
+  <!-- Performance Metrics -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Top Performing Registers -->
+    <div class="dashboard-header">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-text-light dark:text-text-dark mb-2">Top Performing Registers</h2>
+        <p class="text-gray-600 dark:text-gray-300">By current balance</p>
+      </div>
+      <div class="space-y-4">
+        @for (register of getTopPerformingRegisters(); track register.id; let i = $index) {
+          <div class="performance-item">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mr-4">
+                  <span class="text-sm font-bold text-white">#{{ i + 1 }}</span>
+                </div>
+                <div>
+                  <p class="font-bold text-text-light dark:text-text-dark text-lg">{{ register.name }}</p>
+                  <p class="text-sm text-gray-600 dark:text-gray-300">Branch {{ register.branchId }}</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-emerald-600 dark:text-emerald-400 text-xl">{{ formatCurrency(register.currentBalance) }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- System Health -->
+    <div class="dashboard-header">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-text-light dark:text-text-dark mb-2">System Health</h2>
+        <p class="text-gray-600 dark:text-gray-300">Overall system status</p>
+      </div>
+      <div class="space-y-4">
+        <div class="health-item">
+          <span class="text-text-light dark:text-text-dark font-medium">System Status</span>
+          <span class="status-badge bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300">Healthy</span>
+        </div>
+        <div class="health-item">
+          <span class="text-text-light dark:text-text-dark font-medium">Active Sessions</span>
+          <span class="font-bold text-text-light dark:text-text-dark text-lg">{{ getActiveSessionsCount() }}</span>
+        </div>
+        <div class="health-item">
+          <span class="text-text-light dark:text-text-dark font-medium">Available Registers</span>
+          <span class="font-bold text-text-light dark:text-text-dark text-lg">{{ getAvailableCashRegisters() }}</span>
+        </div>
+        <div class="health-item">
+          <span class="text-text-light dark:text-text-dark font-medium">Last Update</span>
+          <span class="text-sm text-gray-600 dark:text-gray-300">{{ getLastUpdateTime() }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cash Register Modal -->
+<app-generic-modal 
+  [isOpen]="showModal" 
+  [title]="editingCashRegister ? 'Edit Cash Register' : 'Create Cash Register'"
+  (closed)="closeModal()">
+  
+  <form [formGroup]="cashRegisterForm" (ngSubmit)="saveCashRegister()" class="space-y-4">
+    <div>
+      <label for="name" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Name *</label>
+      <input id="name" type="text" formControlName="name" 
+             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+             placeholder="e.g., Main Cash Register, Bar Cash Register, Drive-Thru Cash Register">
+    </div>
+    
+    <div>
+      <label for="description" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Description</label>
+      <textarea id="description" formControlName="description" rows="3"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+                placeholder="Optional description of the cash register location or purpose"></textarea>
+    </div>
+    
+    <div>
+      <label for="branchId" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Branch ID *</label>
+      <input id="branchId" type="number" formControlName="branchId" 
+             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+             placeholder="Enter branch ID">
+    </div>
+    
+    <div>
+      <label for="initialBalance" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Initial Balance *</label>
+      <input id="initialBalance" type="number" formControlName="initialBalance" step="0.01" min="0"
+             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+             placeholder="0.00">
+    </div>
+    
+    <div class="flex justify-end gap-3 pt-4">
+      <button type="button" (click)="closeModal()" 
+              class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+        Cancel
+      </button>
+      <button type="submit" [disabled]="!cashRegisterForm.valid"
+              class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed">
+        {{ editingCashRegister ? 'Update' : 'Create' }}
+      </button>
+    </div>
+  </form>
+</app-generic-modal>

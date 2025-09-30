@@ -1,0 +1,15 @@
+{
+  "sonarlint.rules": {
+    "typescript:S2933": {
+      "level": "off",
+      "description": "Suppressing incorrect readonly warnings for Angular Signals. Signals are designed to be mutable through their API methods (.set(), .update()) and should not be marked as readonly. This rule doesn't understand Angular's signal pattern."
+    }
+  },
+  "sonarlint.connectedMode.project": {
+    "connectionId": "sonarcloud",
+    "projectKey": "cm-pos-webapp"
+  },
+  "sonarlint.excludedRules": [
+    "typescript:S2933"
+  ]
+}

@@ -1,0 +1,39 @@
+<div class="mb-4 p-3 rounded-2xl bg-secondary-light dark:bg-secondary-dark">
+  <div class="font-bold mb-2">Extras</div>
+
+  <div class="flex flex-wrap gap-2">
+    @for (extra of productExtras(); track extra.id) {
+      <label class="cursor-pointer">
+        <input 
+          type="checkbox" 
+          [checked]="selectedIds().includes(extra.id)"
+          (change)="toggleSelection(extra)"
+          class="hidden peer" 
+        />
+        <div class="btn flex items-center peer-checked:btn-primary text-lg">
+          <span>{{ extra.name }}</span>
+          <span class="badge ml-2 px-2 py-1 peer-checked:badge-primary text-lg">
+            + S/ {{ extra.price | number : "1.2-2" }}
+          </span>
+        </div>
+      </label>
+    }
+  </div>
+
+  <!-- Footer con botones -->
+  <div class="mt-4 flex justify-end gap-3 border-t-2 border-primary-light dark:border-gray-700 pt-3">
+    <button 
+      type="button" 
+      class="btn btn-lg"
+      >
+      Descartar
+    </button>
+    <button 
+      type="button" 
+      class="btn btn-lg btn-primary"
+      (click)="saveSelection()"
+      >
+      Agregar
+    </button>
+  </div>
+</div>

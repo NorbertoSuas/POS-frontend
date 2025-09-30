@@ -1,0 +1,6 @@
+{
+  "html-validate.enable": true,
+  "html-validate.config": ".htmlvalidate.json",
+  "html-validate.format.enable": false,
+  "html-validate.lint.enable": true
+}

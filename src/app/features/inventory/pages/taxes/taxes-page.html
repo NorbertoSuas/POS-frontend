@@ -1,0 +1,138 @@
+<div class="p-6 bg-secondary-light dark:bg-secondary-dark min-h-screen">
+  <div class="card mb-8">
+    <div class="flex items-center mb-4">
+      <div class="bg-red-500 p-3 rounded-lg mr-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-receipt"></use>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold text-text-light dark:text-text-dark">Tax Management</h1>
+        <p class="text-gray-600 dark:text-gray-300 mt-1">Manage tax rates and categories</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Tax Rates</h2>
+        <div class="flex gap-2">
+          <app-button-export 
+            [nameOfTable]="'Taxes'" 
+            [data]="taxService.taxes()">
+          </app-button-export>
+          <app-button-create [iconName]="'plus'" [label]="'Add Tax Rate'" (click)="openCreateModal()"></app-button-create>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6">
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr class="border-b border-gray-200 dark:border-gray-700">
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Name</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Rate</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Created</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Updated</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (taxService.loading()) {
+              <tr>
+                <td colspan="5" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+                    <p class="mt-4 text-gray-600 dark:text-gray-300">Loading taxes...</p>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (!taxService.loading() && taxService.taxes().length === 0) {
+              <tr>
+                <td colspan="5" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="bg-red-100 dark:bg-red-900/20 p-6 rounded-full mb-4">
+                      <svg class="w-12 h-12 text-red-500 dark:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-receipt"></use>
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2">No tax rates found</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">Add your first tax rate to get started</p>
+                    <app-button-create [iconName]="'plus'" [label]="'Create First Tax Rate'" (click)="openCreateModal()"></app-button-create>
+                  </div>
+                </td>
+              </tr>
+            }
+            @for (tax of taxService.taxes(); track tax.id) {
+              <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                <td class="py-4 text-text-light dark:text-text-dark font-semibold">{{ tax.name }}</td>
+                <td class="py-4">
+                  <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300">
+                    {{ tax.rate }}%
+                  </span>
+                </td>
+                <td class="py-4 text-text-light dark:text-text-dark">
+                  {{ tax.created_at | date:'short' }}
+                </td>
+                <td class="py-4 text-text-light dark:text-text-dark">
+                  {{ tax.updated_at | date:'short' }}
+                </td>
+                <td class="py-4">
+                  <div class="flex gap-2">
+                    <button type="button" (click)="openEditModal(tax)" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300" aria-label="Edit tax">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-edit"></use>
+                      </svg>
+                    </button>
+                    <button type="button" (click)="deleteTax(tax)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300" aria-label="Delete tax">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-trash"></use>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tax Modal -->
+<app-generic-modal 
+  [isOpen]="showModal" 
+  [title]="editingTax ? 'Edit Tax Rate' : 'Create Tax Rate'"
+  (closed)="closeModal()">
+  
+  <form [formGroup]="taxForm" (ngSubmit)="saveTax()" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Name *</label>
+      <input type="text" formControlName="name" 
+             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"
+             placeholder="e.g., VAT, Sales Tax, Import Tax">
+    </div>
+    
+    <div>
+      <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Rate (%) *</label>
+      <input type="number" formControlName="rate" min="0" max="100" step="0.01"
+             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"
+             placeholder="e.g., 16.00">
+    </div>
+    
+    <div class="flex justify-end gap-3 pt-4">
+      <button type="button" (click)="closeModal()" 
+              class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+        Cancel
+      </button>
+      <button type="submit" [disabled]="!taxForm.valid"
+              class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed">
+        {{ editingTax ? 'Update' : 'Create' }}
+      </button>
+    </div>
+  </form>
+</app-generic-modal>

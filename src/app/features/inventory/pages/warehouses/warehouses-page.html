@@ -1,0 +1,134 @@
+<div class="p-6 bg-secondary-light dark:bg-secondary-dark min-h-screen">
+  <div class="card mb-8">
+    <div class="flex items-center mb-4">
+      <div class="bg-emerald-500 p-3 rounded-lg mr-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-building"></use>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold text-text-light dark:text-text-dark">Warehouse Management</h1>
+        <p class="text-gray-600 dark:text-gray-300 mt-1">Manage warehouses and their hierarchical structure</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Warehouses</h2>
+        <div class="flex gap-2">
+          <app-button-export 
+            [nameOfTable]="'Warehouses'" 
+            [data]="warehouseService.warehouses()">
+          </app-button-export>
+          <app-button-create [iconName]="'plus'" [label]="'Add Warehouse'" (click)="openCreateModal()"></app-button-create>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6">
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr class="border-b border-gray-200 dark:border-gray-700">
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Name</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Short Name</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Branch</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Status</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (warehouseService.loading()) {
+              <tr>
+                <td colspan="5" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+                    <p class="mt-4 text-gray-600 dark:text-gray-300">Loading warehouses...</p>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (!warehouseService.loading() && warehouseService.warehouses().length === 0) {
+              <tr>
+                <td colspan="5" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="bg-emerald-100 dark:bg-emerald-900/20 p-6 rounded-full mb-4">
+                      <svg class="w-12 h-12 text-emerald-500 dark:text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-building"></use>
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2">No warehouses found</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">Add your first warehouse to get started</p>
+                    <app-button-create [iconName]="'plus'" [label]="'Create First Warehouse'" (click)="openCreateModal()"></app-button-create>
+                  </div>
+                </td>
+              </tr>
+            }
+            @for (warehouse of warehouseService.warehouses(); track warehouse.id) {
+              <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                <td class="py-4 text-text-light dark:text-text-dark font-semibold">{{ warehouse.name }}</td>
+                <td class="py-4 text-text-light dark:text-text-dark font-mono">{{ warehouse.shortname }}</td>
+                <td class="py-4 text-text-light dark:text-text-dark">{{ warehouse.branchId || 'Main Branch' }}</td>
+                <td class="py-4">
+                  <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300">
+                    Active
+                  </span>
+                </td>
+                <td class="py-4">
+                  <div class="flex gap-2">
+                    <button type="button" (click)="openEditModal(warehouse)" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300" aria-label="Edit warehouse">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-edit"></use>
+                      </svg>
+                    </button>
+                    <button type="button" (click)="deleteWarehouse(warehouse)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300" aria-label="Delete warehouse">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-trash"></use>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Warehouse Modal -->
+<app-generic-modal 
+  [isOpen]="showModal" 
+  [title]="editingWarehouse ? 'Edit Warehouse' : 'Create Warehouse'"
+  (closed)="closeModal()">
+  
+  <form [formGroup]="warehouseForm" (ngSubmit)="saveWarehouse()" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Name *</label>
+      <input type="text" formControlName="name" 
+             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+             placeholder="e.g., Main Warehouse, Cold Storage, Distribution Center">
+    </div>
+    
+    <div>
+      <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Short Name *</label>
+      <input type="text" formControlName="shortname" 
+             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white"
+             placeholder="e.g., MW, CS, DC">
+    </div>
+    
+    <div class="flex justify-end gap-3 pt-4">
+      <button type="button" (click)="closeModal()" 
+              class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+        Cancel
+      </button>
+      <button type="submit" [disabled]="!warehouseForm.valid"
+              class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed">
+        {{ editingWarehouse ? 'Update' : 'Create' }}
+      </button>
+    </div>
+  </form>
+</app-generic-modal> 

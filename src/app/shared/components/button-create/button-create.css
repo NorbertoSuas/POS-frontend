@@ -1,0 +1,16 @@
+
+
+
+/* Efectos bonitos para hover y click usando Tailwind y CSS custom */
+.button-create {
+   background-color: var(--color-primary-500);
+}
+.button-create:hover {
+  transform: translateY(-1px) scale(1.01);
+  opacity: 0.8;
+  cursor: pointer;
+}
+.button-create:active {
+  box-shadow: 0 1px 2px 0 rgba(63,106,216,0.10);
+  transform: scale(0.98);
+}

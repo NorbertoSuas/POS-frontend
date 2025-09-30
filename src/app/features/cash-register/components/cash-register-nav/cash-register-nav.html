@@ -1,0 +1,29 @@
+<div class="cash-register-nav">
+  <div class="nav-header">
+    <h2 class="nav-title">Cash Register</h2>
+    <p class="nav-subtitle">Manage cash operations and sessions</p>
+  </div>
+  
+  <nav class="nav-menu">
+    @for (item of navItems; track item.label) {
+      <a [routerLink]="item.route" 
+         routerLinkActive="active"
+         class="nav-item">
+        <div class="nav-icon">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use [attr.href]="'assets/icons/sprite.svg#' + item.icon"></use>
+          </svg>
+        </div>
+        <div class="nav-content">
+          <span class="nav-label">{{ item.label }}</span>
+          <span class="nav-description">{{ item.description }}</span>
+        </div>
+        <div class="nav-arrow">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+          </svg>
+        </div>
+      </a>
+    }
+  </nav>
+</div>

@@ -1,0 +1,143 @@
+<div class="p-6 bg-secondary-light dark:bg-secondary-dark min-h-screen">
+  <div class="card mb-8">
+    <div class="flex items-center mb-4">
+      <div class="bg-red-500 p-3 rounded-lg mr-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-box"></use>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold text-text-light dark:text-text-dark">Product Tax Management</h1>
+        <p class="text-gray-600 dark:text-gray-300 mt-1">Manage product tax assignments and rates</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Product Tax Assignments</h2>
+        <div class="flex gap-2">
+          <app-button-export 
+            [nameOfTable]="'Product Taxes'" 
+            [data]="productTaxes()">
+          </app-button-export>
+          <app-button-create [iconName]="'plus'" [label]="'Add Tax Assignment'" (click)="openCreateModal()"></app-button-create>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6">
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr class="border-b border-gray-200 dark:border-gray-700">
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Product</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Tax Name</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Tax Rate</th>
+              <th scope="col" class="text-left text-gray-600 dark:text-gray-300 font-medium py-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (loading()) {
+              <tr>
+                <td colspan="4" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+                    <p class="mt-4 text-gray-600 dark:text-gray-300">Loading product taxes...</p>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (!loading() && productTaxes().length === 0) {
+              <tr>
+                <td colspan="4" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="bg-red-100 dark:bg-red-900/20 p-6 rounded-full mb-4">
+                      <svg class="w-12 h-12 text-red-500 dark:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-box"></use>
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2">No product tax assignments found</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">Add your first product tax assignment to get started</p>
+                    <app-button-create [iconName]="'plus'" [label]="'Create First Assignment'" (click)="openCreateModal()"></app-button-create>
+                  </div>
+                </td>
+              </tr>
+            }
+            @for (productTax of productTaxes(); track productTax.id) {
+              <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                <td class="py-4 text-text-light dark:text-text-dark font-semibold">{{ getProductName(productTax.productId) }}</td>
+                <td class="py-4 text-text-light dark:text-text-dark">{{ getTaxName(productTax.taxId) }}</td>
+                <td class="py-4">
+                  <span class="px-2 py-1 text-xs font-medium rounded-full" 
+                        [class]="getTaxRateClass(getTaxRate(productTax.taxId))">
+                    {{ formatTaxRate(getTaxRate(productTax.taxId)) }}
+                  </span>
+                </td>
+                <td class="py-4">
+                  <div class="flex gap-2">
+                    <button type="button" (click)="openEditModal(productTax)" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300" aria-label="Edit product tax">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-edit"></use>
+                      </svg>
+                    </button>
+                    <button type="button" (click)="deleteProductTax(productTax)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300" aria-label="Delete product tax">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="assets/icons/sprite.svg#icon-trash"></use>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Tax Modal -->
+  <app-generic-modal 
+    [isOpen]="showModal()" 
+    [title]="editingProductTax() ? 'Edit Product Tax Assignment' : 'Create Product Tax Assignment'"
+    (closed)="closeModal()">
+    
+    <form [formGroup]="productTaxForm" (ngSubmit)="saveProductTax()" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Product *</label>
+          <select formcontrolname="productId" 
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white">
+            <option value="">Select product</option>
+            @for (product of products(); track product.id) {
+              <option [value]="product.id">{{ product.name }}</option>
+            }
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Tax *</label>
+          <select formcontrolname="taxId" 
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white">
+            <option value="">Select tax</option>
+            @for (tax of taxes(); track tax.id) {
+              <option [value]="tax.id">{{ tax.name }} ({{ formatTaxRate(tax.rate) }})</option>
+            }
+          </select>
+        </div>
+      </div>
+      
+      <div class="flex justify-end gap-2 pt-4">
+        <button type="button" (click)="closeModal()" 
+                class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="!productTaxForm.valid" 
+                class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ editingProductTax() ? 'Update' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </app-generic-modal>
+</div>

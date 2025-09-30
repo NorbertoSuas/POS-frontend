@@ -1,0 +1,84 @@
+/* Cash Register Landing Page Styles - Following Project Architecture */
+
+/* Background styling using project CSS variables */
+.cash-register-landing-bg {
+  background-color: var(--color-secondary-light);
+}
+
+.dark .cash-register-landing-bg {
+  background-color: var(--color-secondary-dark);
+}
+
+/* Text styling using project CSS variables */
+.cash-register-title {
+  color: var(--color-text-light);
+}
+
+.dark .cash-register-title {
+  color: var(--color-text-dark);
+}
+
+.cash-register-subtitle {
+  color: var(--color-gray-600);
+}
+
+.dark .cash-register-subtitle {
+  color: var(--color-gray-300);
+}
+
+.card {
+  background-color: var(--color-primary-light);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  border: 1px solid var(--color-gray-200);
+}
+
+.dark .card {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-gray-600);
+}
+
+.card-header {
+  padding: 1rem;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: rgb(17 24 39);
+  margin-bottom: 0.5rem;
+}
+
+.dark .card-title {
+  color: rgb(243 244 246);
+}
+
+.card-content {
+  padding: 1rem;
+}
+
+.card-icon {
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1rem;
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover .card-icon {
+  transform: scale(1.1);
+}
+
+/* Grid Layout */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+}

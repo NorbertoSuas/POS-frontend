@@ -1,0 +1,250 @@
+<div class="cashier-container">
+  <!-- Header Section -->
+  <div class="cashier-header">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <div class="stats-icon emerald mr-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-user-check"></use>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold text-text-light dark:text-text-dark mb-2">Cashier Dashboard</h1>
+          <p class="text-gray-600 dark:text-gray-300 text-lg">Welcome {{ currentUser()?.username || 'Cashier' }} - {{ todayDate | date:'fullDate':'en-US' }}</p>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button 
+          (click)="loadData()"
+          class="btn-primary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-refresh-cw"></use>
+          </svg>
+          Refresh
+        </button>
+        <div class="status-indicator" [class]="getStatusClass(todayStats().sessionStatus)">
+          <div class="status-dot"></div>
+          <span class="status-text">{{ todayStats().sessionStatus }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Performance Indicators -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon blue">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-list"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Today's Movements</p>
+          <p class="stats-value">{{ todayStats().totalMovements }}</p>
+          <p class="stats-subtitle">Total transactions</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon green">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-dollar-sign"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Daily Total</p>
+          <p class="stats-value">{{ formatCurrency(todayStats().totalAmount) }}</p>
+          <p class="stats-subtitle">Revenue today</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon purple">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-clock"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Session Status</p>
+          <p class="stats-value">{{ todayStats().sessionStatus }}</p>
+          <p class="stats-subtitle">Current session</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon orange">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-alert-triangle"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Pending Corrections</p>
+          <p class="stats-value">{{ todayStats().pendingCorrections }}</p>
+          <p class="stats-subtitle">Awaiting review</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions Section -->
+  <div class="card mb-8">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+      <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Quick Actions</h2>
+    </div>
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <button 
+          *ngFor="let action of quickActions" 
+          (click)="executeAction(action)"
+          class="quick-action-card"
+          [class]="getActionClass(action.color)">
+          <div class="stats-icon" [class]="action.color + '-500'">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use [attr.href]="'assets/icons/sprite.svg#icon-' + action.icon"></use>
+            </svg>
+          </div>
+          <h3 class="font-bold text-text-light dark:text-text-dark mb-2 text-lg">{{ action.title }}</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-300">{{ action.description }}</p>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity Section -->
+  <div class="card">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+      <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Recent Activity</h2>
+    </div>
+    <div class="p-6">
+      <div class="space-y-4">
+        <div class="flex items-center p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+          <div class="stats-icon blue mr-4">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use href="assets/icons/sprite.svg#icon-plus"></use>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <p class="text-text-light dark:text-text-dark font-medium">Session started at 08:00 AM</p>
+            <span class="text-sm text-gray-500 dark:text-gray-400">2 hours ago</span>
+          </div>
+        </div>
+
+        <div class="flex items-center p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+          <div class="stats-icon green mr-4">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use href="assets/icons/sprite.svg#icon-dollar-sign"></use>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <p class="text-text-light dark:text-text-dark font-medium">Movement recorded: +$1,250.00</p>
+            <span class="text-sm text-gray-500 dark:text-gray-400">1 hour ago</span>
+          </div>
+        </div>
+
+        <div class="flex items-center p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+          <div class="stats-icon orange mr-4">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use href="assets/icons/sprite.svg#icon-alert-triangle"></use>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <p class="text-text-light dark:text-text-dark font-medium">Correction requested: Movement #1234</p>
+            <span class="text-sm text-gray-500 dark:text-gray-400">30 minutes ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Correction Modal -->
+<app-generic-modal 
+  [isOpen]="showCorrectionModal()" 
+  [title]="'Report Correction'"
+  (close)="closeCorrectionModal()">
+  
+  <form [formGroup]="correctionForm" (ngSubmit)="submitCorrection()" class="space-y-4">
+    <div>
+      <label for="movementId" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        Movement ID *
+      </label>
+      <input type="number" id="movementId" formControlName="movementId"
+             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+             placeholder="e.g. 1234">
+    </div>
+
+    <div>
+      <label for="correctionType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        Correction Type *
+      </label>
+      <select id="correctionType" formControlName="correctionType"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white">
+        <option value="">Select type</option>
+        <option value="amount">Incorrect amount</option>
+        <option value="type">Incorrect movement type</option>
+        <option value="description">Incorrect description</option>
+        <option value="reference">Incorrect reference</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label for="currentValue" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Current Value *
+        </label>
+        <input type="text" id="currentValue" formControlName="currentValue"
+               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+               placeholder="Current value">
+      </div>
+      <div>
+        <label for="proposedValue" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Proposed Value *
+        </label>
+        <input type="text" id="proposedValue" formControlName="proposedValue"
+               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+               placeholder="Correct value">
+      </div>
+    </div>
+
+    <div>
+      <label for="reason" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        Reason for Correction *
+      </label>
+      <textarea id="reason" formControlName="reason" rows="3"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+                placeholder="Please explain in detail why you need this correction"></textarea>
+    </div>
+
+    <div>
+      <label for="urgency" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        Urgency
+      </label>
+      <select id="urgency" formControlName="urgency"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+    </div>
+    
+    <div class="flex justify-end gap-3 pt-4">
+      <button type="button" (click)="closeCorrectionModal()" 
+              class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+        Cancel
+      </button>
+      <button type="submit" [disabled]="!correctionForm.valid"
+              class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed">
+        Submit Request
+      </button>
+    </div>
+  </form>
+</app-generic-modal>

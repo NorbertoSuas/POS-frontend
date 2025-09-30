@@ -1,0 +1,242 @@
+/* ===== ESTILOS BASE ===== */
+.audit-filters-container {
+  background-color: var(--bg-card);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-secondary);
+  border: 1px solid var(--border-primary);
+  transition: all 0.3s ease;
+}
+
+/* Indicador de filtros activos */
+.active-filters-indicator {
+  background-color: #fef3c7;
+  border: 1px solid var(--icon-primary);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.dark .active-filters-indicator {
+  background-color: var(--bg-secondary);
+  border-color: var(--icon-primary);
+}
+
+.active-filters-indicator svg {
+  color: #d97706;
+  flex-shrink: 0;
+}
+
+.dark .active-filters-indicator svg {
+  color: var(--icon-primary);
+}
+
+.active-filters-indicator span {
+  color: #92400e;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.dark .active-filters-indicator span {
+  color: var(--icon-primary);
+}
+
+/* Basic filters */
+.basic-filters {
+  margin-bottom: 1.5rem;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.filter-select,
+.filter-input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-secondary);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.filter-select:focus,
+.filter-input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgb(139 92 246 / 0.1);
+}
+
+.filter-select:hover,
+.filter-input:hover {
+  border-color: var(--border-muted);
+}
+
+/* Filter actions */
+.filter-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.btn-advanced-filters {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-secondary);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-advanced-filters:hover {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-muted);
+  color: var(--text-primary);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Botones */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.btn-primary {
+  background-color: #8b5cf6;
+  color: white;
+  border-color: #8b5cf6;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #7c3aed;
+  border-color: #7c3aed;
+}
+
+.btn-secondary {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-secondary);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-muted);
+}
+
+/* Filtros avanzados */
+.advanced-filters {
+  border-top: 1px solid var(--border-secondary);
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+  transition: border-color 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .audit-filters-container {
+    padding: 1rem;
+  }
+  
+  .filter-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .filter-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .btn-advanced-filters {
+    justify-content: center;
+  }
+  
+  .action-buttons {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .audit-filters-container {
+    padding: 0.75rem;
+  }
+  
+  .filter-row {
+    gap: 0.5rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .btn {
+    justify-content: center;
+  }
+}

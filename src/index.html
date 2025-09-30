@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CmPosWebapp</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
+  <!-- Critical styles to prevent content flash -->
+  <style>
+    /* Hide content until theme is applied */
+    .theme-loading {
+      visibility: hidden;
+    }
+    
+    /* Critical CSS variables to prevent flash */
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-secondary: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-primary: #e5e7eb;
+      --border-secondary: #d1d5db;
+      --border-muted: #f3f4f6;
+      --shadow-primary: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-secondary: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+      --btn-primary-bg: #ca8a04;
+      --btn-primary-hover: #a16207;
+      --btn-secondary-bg: #ffffff;
+      --btn-secondary-hover: #f9fafb;
+      --btn-export-bg: #ffffff;
+      --btn-export-hover: #f9fafb;
+      --icon-primary: #fbbf24;
+      --icon-secondary: #f59e0b;
+    }
+    
+    /* Dark mode */
+    .dark {
+      --bg-primary: #0f172a;
+      --bg-card: #1e2937;
+      --bg-secondary: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --border-primary: #374151;
+      --border-secondary: #4b5563;
+      --border-muted: #6b7280;
+      --shadow-primary: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+      --shadow-secondary: 0 1px 3px 0 rgb(0 0 0 / 0.3);
+      --btn-primary-bg: #f59e0b;
+      --btn-primary-hover: #d97706;
+      --btn-secondary-bg: #374151;
+      --btn-secondary-hover: #4b5563;
+      --btn-export-bg: #374151;
+      --btn-export-hover: #4b5563;
+      --icon-primary: #fbbf24;
+      --icon-secondary: #f59e0b;
+    }
+    
+    /* Smooth transitions */
+    * {
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    /* Base background */
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body class="theme-loading">
+  <app-root></app-root>
+  <script>
+    // Apply theme immediately to prevent flash
+    (function() {
+      const theme = localStorage.getItem('theme') || 'system';
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const shouldBeDark = theme === 'dark' || (theme === 'system' && prefersDark);
+      
+      if (shouldBeDark) {
+        document.documentElement.classList.add('dark');
+        document.body.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+        console.log('🌙 Dark theme applied from HTML');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.body.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+        console.log('☀️ Light theme applied from HTML');
+      }
+      
+      // Remove loading class after a small delay
+      setTimeout(() => {
+        document.body.classList.remove('theme-loading');
+        console.log('✨ Theme loaded completely');
+      }, 100);
+    })();
+  </script>
+</body>
+</html>

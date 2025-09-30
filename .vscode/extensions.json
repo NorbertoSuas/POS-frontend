@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "bradlc.vscode-tailwindcss",
+    "angular.ng-template",
+    "ms-vscode.vscode-typescript-next"
+  ]
+}

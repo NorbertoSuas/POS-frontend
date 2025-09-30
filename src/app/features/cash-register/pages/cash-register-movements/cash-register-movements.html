@@ -1,0 +1,433 @@
+<div class="movements-container">
+  <!-- Header Section -->
+  <div class="movements-header">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <div class="stats-icon blue mr-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-arrow-left-right"></use>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold text-text-light dark:text-text-dark mb-2">Movement Management</h1>
+          <p class="text-gray-600 dark:text-gray-300 text-lg">Track and manage all cash register movements and transactions</p>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button 
+          (click)="refreshMovements()"
+          class="btn-outline">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-refresh-cw"></use>
+          </svg>
+          Refresh
+        </button>
+        <button 
+          (click)="exportData()"
+          class="btn-outline">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-download"></use>
+          </svg>
+          Export
+        </button>
+        <button 
+          (click)="openCreateModal()"
+          class="btn-primary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-plus"></use>
+          </svg>
+          New Movement
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon blue">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-arrow-left-right"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Total Movements</p>
+          <p class="stats-value">{{ movementService.movements().length }}</p>
+          <p class="stats-subtitle">All transactions</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon green">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-arrow-up"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Total Income</p>
+          <p class="stats-value">{{ formatCurrency(movementService.calculateTotalByCategory('income')) }}</p>
+          <p class="stats-subtitle">Cash inflows</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon red">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-arrow-down"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Total Expenses</p>
+          <p class="stats-value">{{ formatCurrency(movementService.calculateTotalByCategory('expense')) }}</p>
+          <p class="stats-subtitle">Cash outflows</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon emerald">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-dollar-sign"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Net Balance</p>
+          <p class="stats-value">{{ formatCurrency(movementService.calculateNetBalance()) }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Actions -->
+  <div class="filters-section bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Filter Movements</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-300">Refine your search with advanced filters</p>
+      </div>
+      <div class="flex gap-2">
+        <button type="button" 
+                (click)="clearFilters()"
+                class="btn-outline btn-sm">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-x"></use>
+          </svg>
+          Clear
+        </button>
+        <button type="button" 
+                (click)="filterByDateRange()"
+                class="btn-primary btn-sm">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-filter"></use>
+          </svg>
+          Apply
+        </button>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Date Range Filter -->
+      <div>
+        <label for="startDate" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Start Date</label>
+        <input id="startDate" type="date" 
+               [value]="startDate().toISOString().split('T')[0]"
+               (change)="onStartDateChange($event)"
+               class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      </div>
+      
+      <div>
+        <label for="endDate" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">End Date</label>
+        <input id="endDate" type="date" 
+               [value]="endDate().toISOString().split('T')[0]"
+               (change)="onEndDateChange($event)"
+               class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      </div>
+      
+      <!-- Cash Register Filter -->
+      <div>
+        <label for="cashRegisterFilter" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Cash Register</label>
+        <select id="cashRegisterFilter" [value]="selectedCashRegisterId()" 
+                (change)="onCashRegisterChange($event)"
+                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option value="">All Cash Registers</option>
+          @for (cashRegister of cashRegisterService.cashRegisters(); track cashRegister.id) {
+            <option [value]="cashRegister.id">{{ cashRegister.name }}</option>
+          }
+        </select>
+      </div>
+      
+      <!-- Movement Type Filter -->
+      <div>
+        <label for="movementTypeFilter" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Movement Type</label>
+        <select id="movementTypeFilter" [value]="selectedMovementTypeId()" 
+                (change)="onMovementTypeChange($event)"
+                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-light dark:text-text-dark focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option value="">All Types</option>
+          @for (type of movementService.movementTypes(); track type.id) {
+            <option [value]="type.id">{{ type.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Movements Table -->
+  <div class="movements-section bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Movement History</h2>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">{{ filteredMovements().length }} movements found</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="text-sm text-gray-500 dark:text-gray-400">
+            Last updated: {{ getCurrentTime() }}
+          </div>
+          <button type="button" 
+                  (click)="refreshData()"
+                  class="btn-outline btn-sm">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <use href="assets/icons/sprite.svg#icon-refresh-cw"></use>
+            </svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Movements Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-gray-50 dark:bg-gray-700">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+                Date
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-circle-dollar-sign"></use>
+                </svg>
+                Cash Register
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-tag"></use>
+                </svg>
+                Type
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-file-text"></use>
+                </svg>
+                Description
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <div class="flex items-center justify-end gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-dollar-sign"></use>
+                </svg>
+                Amount
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-hash"></use>
+                </svg>
+                Reference
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (movementService.loading()) {
+            <tr>
+              <td colspan="7" class="text-center py-12">
+                <div class="flex flex-col items-center">
+                  <div class="loading-spinner h-12 w-12"></div>
+                  <p class="mt-4 text-gray-600 dark:text-gray-300">Loading movements...</p>
+                </div>
+              </td>
+            </tr>
+          }
+          @if (!movementService.loading() && filteredMovements().length === 0) {
+            <tr>
+              <td colspan="7" class="text-center py-12">
+                <div class="empty-state">
+                  <div class="empty-state-icon">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <use href="assets/icons/sprite.svg#icon-arrow-left-right"></use>
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-text-light dark:text-text-dark mb-2">No movements found</h3>
+                  <p class="text-gray-600 dark:text-gray-300 mb-4">Create your first movement or adjust your filters</p>
+                  <button type="button" 
+                          (click)="openCreateModal()"
+                          class="btn-primary">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <use href="assets/icons/sprite.svg#icon-plus"></use>
+                    </svg>
+                    Create First Movement
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+          @for (movement of filteredMovements(); track movement.id) {
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-text-light dark:text-text-dark">
+                  {{ formatDate(movement.movementDate) }}
+                </div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">
+                  {{ getTimeFromDate(movement.movementDate) }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-text-light dark:text-text-dark">
+                  {{ getCashRegisterName(movement.cashRegisterId) }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ getMovementTypeClass(movement.movementTypeId) }}">
+                  {{ getMovementTypeName(movement.movementTypeId) }}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-text-light dark:text-text-dark max-w-xs truncate">
+                  {{ movement.description || 'No description' }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right">
+                <div class="text-sm font-bold {{ getAmountClass(movement.movementTypeId) }}">
+                  {{ formatCurrency(movement.amount) }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-mono text-gray-500 dark:text-gray-400">
+                  {{ movement.reference || '-' }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <div class="flex items-center justify-center gap-1">
+                  <button type="button" 
+                          (click)="openEditModal(movement)" 
+                          class="p-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors" 
+                          aria-label="Edit movement">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <use href="assets/icons/sprite.svg#icon-edit"></use>
+                    </svg>
+                  </button>
+                  <button type="button" 
+                          (click)="deleteMovement(movement)" 
+                          class="p-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" 
+                          aria-label="Delete movement">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <use href="assets/icons/sprite.svg#icon-trash"></use>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Movement Modal -->
+@if (showModal()) {
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4" style="background-color: #ffffff;">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold text-text-light dark:text-text-dark">
+        {{ editingMovement() ? 'Edit Movement' : 'Create Movement' }}
+      </h3>
+      <button type="button" 
+              (click)="closeModal()"
+              class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-x"></use>
+        </svg>
+      </button>
+    </div>
+    
+    <form [formGroup]="movementForm" (ngSubmit)="saveMovement()" class="space-y-4">
+      <div>
+        <label for="cashRegisterId" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Cash Register *</label>
+        <select id="cashRegisterId" formControlName="cashRegisterId" 
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+          <option value="">Select Cash Register</option>
+          @for (cashRegister of cashRegisterService.cashRegisters(); track cashRegister.id) {
+            <option [value]="cashRegister.id">{{ cashRegister.name }}</option>
+          }
+        </select>
+      </div>
+      
+      <div>
+        <label for="movementTypeId" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Movement Type *</label>
+        <select id="movementTypeId" formControlName="movementTypeId" 
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+          <option value="">Select Movement Type</option>
+          @for (type of movementService.movementTypes(); track type.id) {
+            <option [value]="type.id">{{ type.name }}</option>
+          }
+        </select>
+      </div>
+      
+      <div>
+        <label for="amount" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Amount *</label>
+        <input id="amount" type="number" formControlName="amount" step="0.01" min="0.01"
+               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+               placeholder="0.00">
+      </div>
+      
+      <div>
+        <label for="description" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Description</label>
+        <textarea id="description" formControlName="description" rows="3"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  placeholder="Description of the movement"></textarea>
+      </div>
+      
+      <div>
+        <label for="reference" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Reference</label>
+        <input id="reference" type="text" formControlName="reference" 
+               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+               placeholder="Optional reference number or code">
+      </div>
+      
+      <div class="flex justify-end gap-3 pt-4">
+        <button type="button" (click)="closeModal()" 
+                class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="!movementForm.valid || movementService.loading()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ editingMovement() ? 'Update' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}

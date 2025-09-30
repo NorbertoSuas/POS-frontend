@@ -1,0 +1,67 @@
+<div class="cash-register-status-container">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    @for (cashRegister of filteredCashRegisters; track cashRegister.id) {
+      <div class="cash-register-card" (click)="onCashRegisterClick(cashRegister)">
+        <div class="card-header">
+          <div class="flex items-center justify-between">
+            <h3 class="cash-register-name">{{ cashRegister.name }}</h3>
+            <span class="status-badge {{ getStatusClass(getCashRegisterStatus(cashRegister)) }}">
+              {{ getCashRegisterStatus(cashRegister) }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <div class="cash-register-info">
+            <p class="description">{{ cashRegister.description || 'No description' }}</p>
+            <p class="branch-id">Branch ID: {{ cashRegister.branchId }}</p>
+            <p class="balance">Balance: {{ formatCurrency(cashRegister.currentBalance) }}</p>
+          </div>
+          
+          <div class="cash-register-actions">
+            @if (getCashRegisterStatus(cashRegister) === 'Available') {
+              <button 
+                type="button" 
+                (click)="onOpenSession(cashRegister, $event)"
+                class="btn-open-session"
+                aria-label="Open session for {{ cashRegister.name }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-play"></use>
+                </svg>
+                Open Session
+              </button>
+            }
+            
+            @if (getCashRegisterStatus(cashRegister) === 'In Use') {
+              <button 
+                type="button" 
+                (click)="onCloseSession(cashRegister, $event)"
+                class="btn-close-session"
+                aria-label="Close session for {{ cashRegister.name }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-stop"></use>
+                </svg>
+                Close Session
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+  
+  @if (filteredCashRegisters.length === 0) {
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-circle-dollar-sign"></use>
+        </svg>
+      </div>
+      <h3 class="empty-state-title">No cash registers available</h3>
+      <p class="empty-state-description">
+        {{ showActiveOnly ? 'No active cash registers found.' : 'No cash registers found.' }}
+      </p>
+    </div>
+  }
+</div>
+

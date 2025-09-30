@@ -1,0 +1,143 @@
+<app-generic-modal 
+  [isOpen]="isOpen()" 
+  title="Create New Audit Log"
+  (closed)="onClose()">
+  
+  <form [formGroup]="createForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- User ID -->
+    <div class="form-group">
+      <label for="userId" class="form-label">
+        User ID <span class="text-red-500">*</span>
+      </label>
+      <input 
+        type="number" 
+        id="userId" 
+        formControlName="userId"
+        class="form-input"
+        [class.error]="isFieldInvalid('userId')"
+        placeholder="Enter user ID">
+      @if (isFieldInvalid('userId')) {
+        <span class="error-message">{{ getFieldError('userId') }}</span>
+      }
+    </div>
+
+    <!-- Action -->
+    <div class="form-group">
+      <label for="action" class="form-label">
+        Action <span class="text-red-500">*</span>
+      </label>
+      <select 
+        id="action" 
+        formControlName="action"
+        class="form-select"
+        [class.error]="isFieldInvalid('action')">
+        <option value="">Select an action</option>
+        @for (action of actionOptions; track action) {
+          <option [value]="action">{{ action }}</option>
+        }
+      </select>
+      @if (isFieldInvalid('action')) {
+        <span class="error-message">{{ getFieldError('action') }}</span>
+      }
+    </div>
+
+    <!-- Entity Type -->
+    <div class="form-group">
+      <label for="entityType" class="form-label">
+        Entity Type <span class="text-red-500">*</span>
+      </label>
+      <select 
+        id="entityType" 
+        formControlName="entityType"
+        class="form-select"
+        [class.error]="isFieldInvalid('entityType')">
+        <option value="">Select entity type</option>
+        @for (entityType of entityTypeOptions; track entityType) {
+          <option [value]="entityType">{{ entityType }}</option>
+        }
+      </select>
+      @if (isFieldInvalid('entityType')) {
+        <span class="error-message">{{ getFieldError('entityType') }}</span>
+      }
+    </div>
+
+    <!-- Entity ID -->
+    <div class="form-group">
+      <label for="entityId" class="form-label">
+        Entity ID <span class="text-red-500">*</span>
+      </label>
+      <input 
+        type="number" 
+        id="entityId" 
+        formControlName="entityId"
+        class="form-input"
+        [class.error]="isFieldInvalid('entityId')"
+        placeholder="Enter entity ID">
+      @if (isFieldInvalid('entityId')) {
+        <span class="error-message">{{ getFieldError('entityId') }}</span>
+      }
+    </div>
+
+    <!-- Previous Values -->
+    <div class="form-group">
+              <label for="oldValues" class="form-label">Previous Values</label>
+      <textarea 
+        id="oldValues" 
+        formControlName="oldValues"
+        class="form-textarea"
+        rows="3"
+        placeholder="Previous values (optional)"></textarea>
+    </div>
+
+    <!-- New Values -->
+    <div class="form-group">
+              <label for="newValues" class="form-label">New Values</label>
+      <textarea 
+        id="newValues" 
+        formControlName="newValues"
+        class="form-textarea"
+        rows="3"
+        placeholder="New values (optional)"></textarea>
+    </div>
+
+    <!-- User Agent -->
+    <div class="form-group">
+      <label for="userAgent" class="form-label">User Agent</label>
+      <input 
+        type="text" 
+        id="userAgent" 
+        formControlName="userAgent"
+        class="form-input"
+        placeholder="User browser (optional)">
+    </div>
+
+    <!-- Action buttons -->
+    <div class="form-actions">
+      <button 
+        type="button" 
+        class="btn btn-secondary"
+        (click)="onClose()"
+        [disabled]="loading()">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        Cancel
+      </button>
+      
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="createForm.invalid || loading()">
+        @if (loading()) {
+          <span class="loading-spinner"></span>
+          Creating...
+        } @else {
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Create Log
+        }
+      </button>
+    </div>
+  </form>
+</app-generic-modal>

@@ -1,0 +1,213 @@
+<form
+  [formGroup]="form"
+  novalidate
+  class="grid grid-cols-1 md:grid-cols-2 gap-6 dark:bg-secondary-dark p-3 rounded-2xl"
+>
+  <!-- Foto de perfil mejorada -->
+  <div class="col-span-full flex flex-col items-center">
+    <label class="block text-sm font-medium mb-2">Foto de Perfil</label>
+    <div
+      class="relative group w-36 h-36 rounded-full bg-gradient-to-br from-primary-100 to-primary-300 dark:from-secondary-dark dark:to-primary-900 shadow-lg flex items-center justify-center mb-3 border-4 border-primary-200 dark:border-primary-700 transition-all duration-300"
+      (dragover)="$event.preventDefault()"
+      (drop)="onFileSelected($event)"
+      tabindex="0"
+    >
+      @if (imagePreview()) {
+        <img
+          [src]="imagePreview()"
+          alt="Preview"
+          class="object-cover w-full h-full rounded-full border-2 border-primary-400 group-hover:opacity-60 transition-opacity duration-200"
+        />
+      }
+      @if (!imagePreview()) {
+        <span class="text-gray-400 text-4xl"> <i class="fa-regular fa-user"></i> </span>
+      }
+      <label
+        for="file-upload"
+        class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 rounded-full cursor-pointer transition-opacity duration-200 z-10"
+      >
+        <span class="text-white text-xs font-semibold mb-1">Subir o arrastrar imagen</span>
+        <span class="inline-block px-2 py-1 bg-primary-500 text-white rounded-full text-xs shadow">Seleccionar archivo</span>
+      </label>
+      <input
+        id="file-upload"
+        type="file"
+        accept="image/*"
+        (change)="onFileSelected($event)"
+        class="hidden"
+      />
+    </div>
+    @if (error()) {
+      <p class="mt-1 text-red-600 text-sm">{{ error() }}</p>
+    }
+  </div>
+
+  <!-- Nombre -->
+  <div class="col-span-1">
+    <label for="firstName" class="block text-sm font-medium mb-1"
+      >Nombre</label
+    >
+    <input
+      id="firstName"
+      formControlName="firstName"
+      type="text"
+      class="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary"
+      [class.border-red-500]="
+        form.controls['firstName'].touched &&
+        form.controls['firstName'].invalid
+      "
+    />
+    @if (form.controls['firstName'].touched &&
+    form.controls['firstName'].invalid) {
+    <p class="mt-1 text-red-600 text-sm">Campo requerido</p>
+    }
+  </div>
+
+  <!-- Apellido -->
+  <div class="col-span-1">
+    <label for="lastName" class="block text-sm font-medium mb-1"
+      >Apellido</label
+    >
+    <input
+      id="lastName"
+      formControlName="lastName"
+      type="text"
+      class="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary"
+      [class.border-red-500]="
+        form.controls['lastName'].touched && form.controls['lastName'].invalid
+      "
+    />
+    @if (form.controls['lastName'].touched &&
+    form.controls['lastName'].invalid) {
+    <p class="mt-1 text-red-600 text-sm">Campo requerido</p>
+    }
+  </div>
+
+  <!-- Phone -->
+  <div class="col-span-1">
+    <label for="phone" class="block text-sm font-medium mb-1">Phone</label>
+    <input
+      id="phone"
+      formControlName="phone"
+      type="text"
+      placeholder="123-4567"
+      class="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary"
+      [class.border-red-500]="
+        form.controls['phone'].touched && form.controls['phone'].invalid
+      "
+    />
+    @if (form.controls['phone'].touched && form.controls['phone'].invalid) {
+    <p class="mt-1 text-red-600 text-sm">Campo requerido</p>
+    }
+  </div>
+
+  <!-- Email -->
+  <div class="col-span-1">
+    <label for="email" class="block text-sm font-medium mb-1">Email</label>
+    <input
+      id="email"
+      formControlName="email"
+      type="email"
+      placeholder="correo@ejemplo.com"
+      class="peer w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary"
+      [class.border-red-500]="
+        form.controls['email'].touched && form.controls['email'].invalid
+      "
+    />
+    @if (form.controls['email'].touched && form.controls['email'].invalid) {
+    <p class="peer-invalid:visible mt-1 text-red-600 text-sm">
+      Required field and must be a valid email
+    </p>
+    }
+  </div>
+
+  <!-- Start Date -->
+  <div class="col-span-1">
+    <label for="startDate" class="block text-sm font-medium mb-1"
+      >Start Date</label
+    >
+    <input
+      id="startDate"
+      formControlName="startDate"
+      type="date"
+      class="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary dark:text-text-dark dark:[color-scheme:dark]"
+      [class.border-red-500]="
+        form.controls['startDate'].touched &&
+        form.controls['startDate'].invalid
+      "
+    />
+    @if (form.controls['startDate'].touched &&
+    form.controls['startDate'].invalid) {
+    <p class="mt-1 text-red-600 text-sm">Required field</p>
+    }
+  </div>
+
+  <!-- Birth Date -->
+  <div class="col-span-1">
+    <label for="birthDate" class="block text-sm font-medium mb-1"
+      >Birth Date</label
+    >
+    <input
+      id="birthDate"
+      formControlName="birthDate"
+      type="date"
+      class="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary dark:text-text-dark dark:[color-scheme:dark]"
+      [class.border-red-500]="
+        form.controls['birthDate'].touched &&
+        form.controls['birthDate'].invalid
+      "
+    />
+    @if (form.controls['birthDate'].touched &&
+    form.controls['birthDate'].invalid) {
+    <p class="mt-1 text-red-600 text-sm">Required field</p>
+    }
+  </div>
+
+  <!-- End Date -->
+  <div class="col-span-1">
+    <label for="endDate" class="block text-sm font-medium mb-1"
+      >End Date (optional)</label
+    >
+    <input
+      id="endDate"
+      formControlName="endDate"
+      type="date"
+      class="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary dark:text-text-dark dark:[color-scheme:dark]"
+    />
+  </div>
+
+  <!-- Button and messages -->
+  <div class="col-span-1 md:col-span-2 flex items-center space-x-4 mt-4">
+    <button
+      type="submit"
+      [disabled]="form.invalid"
+      (click)="submit()"
+      class="w-full px-4 py-2 bg-primary-500 text-white rounded-lg flex items-center justify-center disabled:opacity-50"
+    >
+      @if (!submitting()) {
+        @if (form.value.id) {
+          <span>Update</span>
+        } @else {
+          <span>Create</span>
+        }
+      } @if (submitting()) {
+        @if (form.value.id) {
+          <span>Updating...</span>
+        } @else {
+          <span>Creating...</span>
+        }
+      }
+    </button>
+
+    @if (error()) {
+      <p class="text-red-600">{{ error() }}</p>
+    }
+    @if (success()) {
+      @if (lastOperationWasUpdate()) {
+        <p class="text-green-600">Employee updated successfully.</p>
+      } @else {
+        <p class="text-green-600">Employee created successfully.</p>
+      }
+    }
+  </div>
+</form>

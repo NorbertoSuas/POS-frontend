@@ -1,0 +1,543 @@
+<div class="sessions-container">
+  <!-- Header Section -->
+  <div class="sessions-header">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <div class="stats-icon blue mr-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-clock"></use>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold text-text-light dark:text-text-dark mb-2">Session Management</h1>
+          <p class="text-gray-600 dark:text-gray-300 text-lg">Manage active sessions, view session history, and monitor session performance</p>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button 
+          (click)="refreshData()"
+          class="btn-primary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-refresh-cw"></use>
+          </svg>
+          Refresh
+        </button>
+        <button 
+          (click)="openCreateCashRegisterModal()"
+          class="btn-primary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-plus"></use>
+          </svg>
+          Add Cash Register
+        </button>
+        <button 
+          (click)="openCreateSessionModal()"
+          class="btn-primary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-clock"></use>
+          </svg>
+          Create Session
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session Statistics -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon green">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-clock"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Active Sessions</p>
+          <p class="stats-value">{{ getTotalActiveSessions() }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon blue">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-calendar"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Sessions Today</p>
+          <p class="stats-value">{{ getTodaySessions() }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon purple">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-trending-up"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Avg Duration</p>
+          <p class="stats-value">{{ getAverageSessionDuration() }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-card">
+      <div class="flex items-center">
+        <div class="stats-icon emerald">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-dollar-sign"></use>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-label">Session Value</p>
+          <p class="stats-value">{{ formatCurrency(getTotalSessionValue()) }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cash Register Management -->
+  <div class="cash-register-management-section">
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h2 class="text-2xl font-bold text-text-light dark:text-text-dark mb-2">Cash Register Management</h2>
+        <p class="text-gray-600 dark:text-gray-300">Manage cash registers and their status</p>
+      </div>
+      <app-button-export 
+        [nameOfTable]="'Cash Register Status'" 
+        [data]="getRegisterStatusData()">
+      </app-button-export>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (cashRegister of cashRegisterService.cashRegisters(); track cashRegister.id) {
+        <div class="register-status-card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-text-light dark:text-text-dark">{{ cashRegister.name }}</h3>
+            <span class="status-badge {{ getStatusClass(getCashRegisterStatus(cashRegister)) }}">
+              {{ getCashRegisterStatus(cashRegister) }}
+            </span>
+          </div>
+          
+          <div class="space-y-3 mb-6">
+            <p class="text-sm text-gray-600 dark:text-gray-300">{{ cashRegister.description || 'No description' }}</p>
+            <p class="text-sm font-mono text-gray-600 dark:text-gray-300">Branch ID: {{ cashRegister.branchId }}</p>
+            <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ formatCurrency(cashRegister.currentBalance) }}</p>
+          </div>
+
+          <div class="flex gap-2">
+            <button 
+              (click)="openEditCashRegisterModal(cashRegister)"
+              class="flex-1 btn-secondary">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <use href="assets/icons/sprite.svg#icon-edit"></use>
+              </svg>
+              Edit
+            </button>
+            @if (getCashRegisterStatus(cashRegister) === 'Available') {
+              <button 
+                (click)="openCreateSessionModalFromRegister(cashRegister)"
+                class="flex-1 btn-primary">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-play"></use>
+                </svg>
+                Open Session
+              </button>
+            } @else if (getCashRegisterStatus(cashRegister) === 'In Use') {
+              <button 
+                (click)="viewActiveSession(cashRegister)"
+                class="flex-1 btn-secondary">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-eye"></use>
+                </svg>
+                View Session
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Active Sessions -->
+  <div class="active-sessions-section">
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h2 class="text-2xl font-bold text-text-light dark:text-text-dark mb-2">Active Sessions</h2>
+        <p class="text-gray-600 dark:text-gray-300">Currently open cash register sessions</p>
+      </div>
+      @if (getTotalActiveSessions() > 0) {
+        <app-button-export 
+          [nameOfTable]="'Active Sessions'" 
+          [data]="sessionService.activeSessions()">
+        </app-button-export>
+      }
+    </div>
+    @if (sessionService.activeSessions().length > 0) {
+      <div class="space-y-6">
+        @for (session of sessionService.activeSessions(); track session.id) {
+          <div class="session-card">
+            <div class="flex justify-between items-start mb-6">
+              <div>
+                <h3 class="text-xl font-bold text-text-light dark:text-text-dark">
+                  {{ getCashRegisterName(session.cashRegisterId) }}
+                </h3>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Session #{{ session.id }}</p>
+              </div>
+              <div class="text-right">
+                <span class="status-badge {{ getSessionStatusClass(session.status) }}">
+                  {{ session.status }}
+                </span>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                  Duration: {{ getDuration(session.openDate) }}
+                </p>
+              </div>
+            </div>
+            
+            <div class="session-info-grid">
+              <div class="session-info-item">
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Employee ID</p>
+                <p class="font-bold text-text-light dark:text-text-dark text-lg">{{ session.employeeId }}</p>
+              </div>
+              <div class="session-info-item">
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Opening Balance</p>
+                <p class="font-bold text-text-light dark:text-text-dark text-lg">{{ formatCurrency(session.openingBalance) }}</p>
+              </div>
+              <div class="session-info-item">
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Opened At</p>
+                <p class="font-bold text-text-light dark:text-text-dark text-lg">{{ formatDate(session.openDate) }}</p>
+              </div>
+            </div>
+            
+            @if (session.notes) {
+              <div class="session-notes">
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Notes</p>
+                <p class="text-sm text-text-light dark:text-text-dark">{{ session.notes }}</p>
+              </div>
+            }
+            
+            <div class="flex gap-3">
+              <button 
+                (click)="openCloseSessionModal(session)"
+                class="btn-secondary">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-stop"></use>
+                </svg>
+                Close Session
+              </button>
+              <button 
+                (click)="viewSessionDetails(session)"
+                class="btn-primary">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <use href="assets/icons/sprite.svg#icon-eye"></use>
+                </svg>
+                View Details
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="assets/icons/sprite.svg#icon-clock"></use>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-text-light dark:text-text-dark mb-2">No Active Sessions</h3>
+        <p class="text-gray-600 dark:text-gray-300">All cash register sessions are currently closed.</p>
+      </div>
+    }
+  </div>
+
+  <!-- Session History -->
+  <div class="session-history-section">
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h2 class="text-2xl font-bold text-text-light dark:text-text-dark mb-2">Recent Session History</h2>
+        <p class="text-gray-600 dark:text-gray-300">Last 10 closed sessions</p>
+      </div>
+      <app-button-export 
+        [nameOfTable]="'Session History'" 
+        [data]="getRecentSessions()">
+      </app-button-export>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="sessions-table">
+        <thead>
+          <tr>
+            <th scope="col">Cash Register</th>
+            <th scope="col">Employee</th>
+            <th scope="col">Duration</th>
+            <th scope="col">Opening Balance</th>
+            <th scope="col">Closing Balance</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (session of getRecentSessions(); track session.id) {
+            <tr>
+              <td>
+                <div class="text-text-light dark:text-text-dark font-bold">{{ getCashRegisterName(session.cashRegisterId) }}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">ID: {{ session.id }}</div>
+              </td>
+              <td class="text-text-light dark:text-text-dark">Employee {{ session.employeeId }}</td>
+              <td class="text-text-light dark:text-text-dark">
+                @if (session.closeDate) {
+                  {{ getSessionDuration(session.openDate, session.closeDate) }}
+                } @else {
+                  {{ getDuration(session.openDate) }}
+                }
+              </td>
+              <td class="text-text-light dark:text-text-dark font-bold">{{ formatCurrency(session.openingBalance) }}</td>
+              <td class="text-text-light dark:text-text-dark">
+                @if (session.closingBalance) {
+                  <span class="font-bold">{{ formatCurrency(session.closingBalance) }}</span>
+                } @else {
+                  <span class="text-gray-400">-</span>
+                }
+              </td>
+              <td>
+                <span class="status-badge {{ getSessionStatusClass(session.status) }}">
+                  {{ session.status }}
+                </span>
+              </td>
+              <td>
+                <button 
+                  (click)="viewSessionDetails(session)"
+                  class="btn-primary btn-sm">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <use href="assets/icons/sprite.svg#icon-eye"></use>
+                  </svg>
+                  View Details
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Open Session Modal -->
+<app-generic-modal 
+  [isOpen]="showOpenSessionModal" 
+  title="Open New Session"
+  (closed)="closeOpenSessionModal()">
+  
+  @if (selectedCashRegister) {
+    <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+      <h3 class="font-semibold text-blue-800 dark:text-blue-300 mb-2">Cash Register Details</h3>
+      <p class="text-sm text-blue-700 dark:text-blue-200"><strong>Name:</strong> {{ selectedCashRegister.name }}</p>
+      <p class="text-sm text-blue-700 dark:text-blue-200"><strong>Current Balance:</strong> {{ formatCurrency(selectedCashRegister.currentBalance) }}</p>
+    </div>
+  }
+  
+  <form [formGroup]="openSessionForm" (ngSubmit)="openSession()" class="space-y-4">
+    <div>
+      <label for="openingBalance" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Opening Balance *</label>
+      <input id="openingBalance" type="number" formControlName="openingBalance" step="0.01" min="0.01"
+             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+             placeholder="0.00">
+    </div>
+    
+    <div>
+      <label for="notes" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Notes</label>
+      <textarea id="notes" formControlName="notes" rows="3"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                placeholder="Optional notes about this session"></textarea>
+    </div>
+    
+    <div class="flex justify-end gap-3 pt-4">
+      <button type="button" (click)="closeOpenSessionModal()" 
+              class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+        Cancel
+      </button>
+      <button type="submit" [disabled]="!openSessionForm.valid || sessionService.loading()"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+        <span class="flex items-center">
+          @if (sessionService.loading()) {
+            <div class="loading-spinner h-4 w-4 mr-2"></div>
+          }
+          Open Session
+        </span>
+      </button>
+    </div>
+  </form>
+</app-generic-modal>
+
+<!-- Close Session Modal -->
+<app-generic-modal 
+  [isOpen]="showCloseSessionModal" 
+  title="Close Session"
+  (closed)="closeCloseSessionModal()">
+  
+  @if (selectedSession) {
+    <div class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+      <h3 class="font-semibold text-yellow-800 dark:text-yellow-300 mb-2">Session Details</h3>
+      <p class="text-sm text-yellow-700 dark:text-yellow-200"><strong>Cash Register:</strong> {{ getCashRegisterName(selectedSession.cashRegisterId) }}</p>
+      <p class="text-sm text-yellow-700 dark:text-yellow-200"><strong>Opened:</strong> {{ formatDate(selectedSession.openDate) }}</p>
+      <p class="text-sm text-yellow-700 dark:text-yellow-200"><strong>Opening Balance:</strong> {{ formatCurrency(selectedSession.openingBalance) }}</p>
+    </div>
+  }
+  
+  <form [formGroup]="closeSessionForm" (ngSubmit)="closeSession()" class="space-y-4">
+    <div>
+      <label for="closingBalance" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Closing Balance *</label>
+      <input id="closingBalance" type="number" formControlName="closingBalance" step="0.01" min="0"
+             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:bg-gray-700 dark:text-white"
+             placeholder="0.00">
+    </div>
+    
+    <div>
+      <label for="closeSessionNotes" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Notes</label>
+      <textarea id="closeSessionNotes" formControlName="notes" rows="3"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:bg-gray-700 dark:text-white"
+                placeholder="Optional notes about closing this session"></textarea>
+    </div>
+    
+    <div class="flex justify-end gap-3 pt-4">
+      <button type="button" (click)="closeCloseSessionModal()" 
+              class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+        Cancel
+      </button>
+      <button type="submit" [disabled]="!closeSessionForm.valid || sessionService.loading()"
+              class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed">
+        <span class="flex items-center">
+          @if (sessionService.loading()) {
+            <div class="loading-spinner h-4 w-4 mr-2"></div>
+          }
+          Close Session
+        </span>
+      </button>
+    </div>
+  </form>
+</app-generic-modal>
+
+<!-- Create Session Modal -->
+<app-generic-modal 
+  [isOpen]="showCreateSessionModal" 
+  title="Create New Session"
+  (closed)="closeCreateSessionModal()">
+  
+  <div class="space-y-4">
+    <div>
+      <label for="cashRegisterSelect" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Select Cash Register *</label>
+      <select id="cashRegisterSelect" 
+              [(ngModel)]="selectedCashRegisterForCreate"
+              (ngModelChange)="onCashRegisterSelectionChange()"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+        <option value="">Choose a cash register...</option>
+        @for (cashRegister of getAvailableCashRegisters(); track cashRegister.id) {
+          <option [value]="cashRegister.id">{{ cashRegister.name }} - {{ formatCurrency(cashRegister.currentBalance) }}</option>
+        }
+      </select>
+    </div>
+    
+    @if (selectedCashRegisterForCreate) {
+      <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+        <h3 class="font-semibold text-blue-800 dark:text-blue-300 mb-2">Cash Register Details</h3>
+        <p class="text-sm text-blue-700 dark:text-blue-200"><strong>Name:</strong> {{ getSelectedCashRegisterName() }}</p>
+        <p class="text-sm text-blue-700 dark:text-blue-200"><strong>Current Balance:</strong> {{ getSelectedCashRegisterBalance() }}</p>
+      </div>
+      
+      <form [formGroup]="createSessionForm" (ngSubmit)="createSession()" class="space-y-4">
+        <div>
+          <label for="openingBalance" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Opening Balance *</label>
+          <input id="openingBalance" type="number" formControlName="openingBalance" step="0.01" min="0.01"
+                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                 placeholder="0.00">
+        </div>
+        
+        <div>
+          <label for="notes" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Notes</label>
+          <textarea id="notes" formControlName="notes" rows="3"
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    placeholder="Optional notes about this session"></textarea>
+        </div>
+        
+        <div class="flex justify-end gap-3 pt-4">
+          <button type="button" (click)="closeCreateSessionModal()" 
+                  class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+            Cancel
+          </button>
+          <button type="submit" [disabled]="!createSessionForm.valid || sessionService.loading()"
+                  class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+            <span class="flex items-center">
+              @if (sessionService.loading()) {
+                <div class="loading-spinner h-4 w-4 mr-2"></div>
+              }
+              Create Session
+            </span>
+          </button>
+        </div>
+      </form>
+    } @else {
+      <div class="text-center py-8">
+        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <use href="assets/icons/sprite.svg#icon-circle-dollar-sign"></use>
+        </svg>
+        <p class="text-gray-600 dark:text-gray-300">Please select a cash register to create a session</p>
+      </div>
+    }
+  </div>
+</app-generic-modal>
+
+<!-- Cash Register Management Modal -->
+<app-generic-modal 
+  [isOpen]="showCashRegisterModal" 
+  [title]="editingCashRegister ? 'Edit Cash Register' : 'Add Cash Register'"
+  (closed)="closeCashRegisterModal()">
+  
+  <form [formGroup]="cashRegisterForm" (ngSubmit)="saveCashRegister()" class="space-y-4">
+    <div>
+      <label for="name" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Name *</label>
+      <input id="name" type="text" formControlName="name"
+             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+             placeholder="Enter cash register name">
+    </div>
+    
+    <div>
+      <label for="description" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Description</label>
+      <textarea id="description" formControlName="description" rows="3"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                placeholder="Enter description (optional)"></textarea>
+    </div>
+    
+    <div>
+      <label for="branchId" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Branch ID *</label>
+      <input id="branchId" type="number" formControlName="branchId"
+             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+             placeholder="Enter branch ID">
+    </div>
+    
+    <div>
+      <label for="initialBalance" class="block text-sm font-medium text-text-light dark:text-text-dark mb-2">Initial Balance *</label>
+      <input id="initialBalance" type="number" formControlName="initialBalance" step="0.01" min="0"
+             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+             placeholder="0.00">
+    </div>
+    
+    <div class="flex justify-end gap-3 pt-4">
+      <button type="button" (click)="closeCashRegisterModal()" 
+              class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+        Cancel
+      </button>
+      <button type="submit" [disabled]="!cashRegisterForm.valid || cashRegisterService.loading()"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+        <span class="flex items-center">
+          @if (cashRegisterService.loading()) {
+            <div class="loading-spinner h-4 w-4 mr-2"></div>
+          }
+          {{ editingCashRegister ? 'Update' : 'Create' }}
+        </span>
+      </button>
+    </div>
+  </form>
+</app-generic-modal>

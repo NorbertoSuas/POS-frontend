@@ -1,0 +1,86 @@
+<div class="pagination-container" [class.dark]="isDarkMode()">
+  <!-- Information about displayed elements -->
+  <div class="pagination-info">
+    <span class="info-text">
+      Showing {{ startItem() }} - {{ endItem() }} of {{ totalItems() }} elements
+    </span>
+    
+    <div class="page-size-selector">
+      <label for="pageSize" class="page-size-label">Elements per page:</label>
+      <select 
+        id="pageSize" 
+        [value]="pageSize()" 
+        (change)="onPageSizeChange($event)"
+        class="page-size-select">
+        @for (size of pageSizeOptions(); track size) {
+          <option [value]="size">{{ size }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Pagination controls -->
+  <div class="pagination-controls">
+    <!-- Navigation buttons -->
+    <div class="navigation-buttons">
+      <button 
+        class="btn btn-sm btn-outline"
+        [disabled]="!canGoPrevious()"
+        (click)="goToFirst()"
+        title="Go to first page">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+        </svg>
+      </button>
+      
+      <button 
+        class="btn btn-sm btn-outline"
+        [disabled]="!canGoPrevious()"
+        (click)="goToPrevious()"
+        title="Previous page">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Page numbers -->
+    <div class="page-numbers">
+      @for (page of pages(); track page) {
+        @if (isPageNumber(page)) {
+          <button 
+            class="btn btn-sm"
+            [class]="isCurrentPage(page) ? 'btn-primary' : 'btn-outline'"
+            (click)="onPageChange(page)">
+            {{ page }}
+          </button>
+        } @else {
+          <span class="page-ellipsis">{{ page }}</span>
+        }
+      }
+    </div>
+
+    <!-- Navigation buttons -->
+    <div class="navigation-buttons">
+      <button 
+        class="btn btn-sm btn-outline"
+        [disabled]="!canGoNext()"
+        (click)="goToNext()"
+        title="Next page">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+      
+      <button 
+        class="btn btn-sm btn-outline"
+        [disabled]="!canGoNext()"
+        (click)="goToLast()"
+        title="Go to last page">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

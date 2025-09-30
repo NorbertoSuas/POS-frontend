@@ -1,0 +1,168 @@
+/* Global Table Styles for Cash Register Feature */
+
+/* Base Table Styles */
+.cash-register-table,
+.sessions-table,
+.movements-table,
+.movement-types-table {
+  @apply w-full text-left border-collapse;
+}
+
+/* Table Headers */
+.cash-register-table th,
+.sessions-table th,
+.movements-table th,
+.movement-types-table th {
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem; /* px-4 */
+  padding-top: 0.75rem; /* py-3 */
+  padding-bottom: 0.75rem; /* py-3 */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 600; /* font-semibold */
+  color: var(--color-text-light);
+  background-color: #f9fafb; /* bg-gray-50 */
+  border-bottom: 1px solid #e5e7eb; /* border-b border-gray-200 */
+}
+
+.dark .cash-register-table th,
+.dark .sessions-table th,
+.dark .movements-table th,
+.dark .movement-types-table th,
+[data-theme='dark'] .cash-register-table th,
+[data-theme='dark'] .sessions-table th,
+[data-theme='dark'] .movements-table th,
+[data-theme='dark'] .movement-types-table th {
+  color: var(--color-text-dark);
+  background-color: #1f2937; /* bg-gray-800 */
+  border-bottom-color: #374151; /* border-gray-700 */
+}
+
+/* Table Cells */
+.cash-register-table td,
+.sessions-table td,
+.movements-table td,
+.movement-types-table td {
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem; /* px-4 */
+  padding-top: 0.75rem; /* py-3 */
+  padding-bottom: 0.75rem; /* py-3 */
+  border-bottom: 1px solid #e5e7eb; /* border-b border-gray-200 */
+}
+
+.dark .cash-register-table td,
+.dark .sessions-table td,
+.dark .movements-table td,
+.dark .movement-types-table td,
+[data-theme='dark'] .cash-register-table td,
+[data-theme='dark'] .sessions-table td,
+[data-theme='dark'] .movements-table td,
+[data-theme='dark'] .movement-types-table td {
+  border-bottom-color: #374151; /* border-gray-700 */
+}
+
+/* Table Rows */
+.cash-register-table tr,
+.sessions-table tr,
+.movements-table tr,
+.movement-types-table tr {
+  @apply hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex; /* inline-flex */
+  align-items: center; /* items-center */
+  padding-left: 0.625rem; /* px-2.5 */
+  padding-right: 0.625rem; /* px-2.5 */
+  padding-top: 0.125rem; /* py-0.5 */
+  padding-bottom: 0.125rem; /* py-0.5 */
+  border-radius: 9999px; /* rounded-full */
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 500; /* font-medium */
+}
+
+/* Movement Type Badges */
+.movement-type-badge {
+  display: inline-flex; /* inline-flex */
+  align-items: center; /* items-center */
+  padding-left: 0.625rem; /* px-2.5 */
+  padding-right: 0.625rem; /* px-2.5 */
+  padding-top: 0.125rem; /* py-0.5 */
+  padding-bottom: 0.125rem; /* py-0.5 */
+  border-radius: 9999px; /* rounded-full */
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 500; /* font-medium */
+}
+
+/* Category Badges */
+.category-badge {
+  display: inline-flex; /* inline-flex */
+  align-items: center; /* items-center */
+  padding-left: 0.625rem; /* px-2.5 */
+  padding-right: 0.625rem; /* px-2.5 */
+  padding-top: 0.125rem; /* py-0.5 */
+  padding-bottom: 0.125rem; /* py-0.5 */
+  border-radius: 9999px; /* rounded-full */
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 500; /* font-medium */
+}
+
+/* Loading States */
+.loading-spinner {
+  @apply border-4 border-gray-200 dark:border-gray-700 border-t-blue-500 dark:border-t-blue-400 rounded-full animate-spin;
+}
+
+/* Empty State */
+.empty-state {
+  @apply text-center py-12;
+}
+
+.empty-state-icon {
+  @apply p-6 rounded-full mx-auto mb-4;
+}
+
+.empty-state-title {
+  @apply text-lg font-semibold text-text-light dark:text-text-dark mb-2;
+}
+
+.empty-state-description {
+  @apply text-gray-600 dark:text-gray-300 mb-4;
+}
+
+/* Responsive Tables */
+@media (max-width: 768px) {
+  .cash-register-table,
+  .sessions-table,
+  .movements-table,
+  .movement-types-table {
+    @apply text-sm;
+  }
+  
+  .cash-register-table th,
+  .cash-register-table td,
+  .sessions-table th,
+  .sessions-table td,
+  .movements-table th,
+  .movements-table td,
+  .movement-types-table th,
+  .movement-types-table td {
+    @apply px-2 py-2;
+  }
+}
+
+/* Dark Mode Enhancements */
+@media (prefers-color-scheme: dark) {
+  .cash-register-table th,
+  .sessions-table th,
+  .movements-table th,
+  .movement-types-table th {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  .cash-register-table tr:hover,
+  .sessions-table tr:hover,
+  .movements-table tr:hover,
+  .movement-types-table tr:hover {
+    @apply bg-gray-700;
+  }
+}

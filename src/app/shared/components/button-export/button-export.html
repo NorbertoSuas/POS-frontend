@@ -1,0 +1,14 @@
+<button
+  type="button"
+  class="button-export border border-text-light inline-flex items-center gap-2 px-4 py-2 rounded-lg shadow-xl/15 font-medium transition-all duration-200 dark:shadow-primary-500/50"
+  (click)="exportToExcel()"
+>
+  <svg
+    class="w-4 h-4 icon"
+    aria-hidden="true"
+    [style.fill]="'white'"
+  >
+    <use [attr.xlink:href]="iconHref()"></use>
+  </svg>
+  <span class="text-base tracking-wide">{{ label() }}</span>
+</button>

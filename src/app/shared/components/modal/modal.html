@@ -1,0 +1,17 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-sm transition-opacity duration-300">
+  <div class="card rounded-2xl mb-10 shadow-2xl scale-100 animate-fade-in w-full h-auto sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-4xl max-h-[90vh] overflow-auto">
+      <header class="flex justify-between items-center p-2 border-b border-gray-200 dark:border-gray-700 rounded-t-2xl">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ titleToShow() }}</h2>
+        <button (click)="close()"
+                class="cursor-pointer text-text-light hover:text-primary-500 dark:text-text-dark dark:hover:text-primary-500 transition-colors text-2xl font-bold px-2 py-1">
+          ✕
+        </button>
+      </header>
+  <section class="p-0">
+        <!-- Aquí se inyecta el contenido hijo -->
+        <ng-content></ng-content>
+      </section>
+    </div>
+  </div>
+}

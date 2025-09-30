@@ -1,0 +1,1 @@
+export const CURRENCY = {id:'colon', code: 'CRC',name:'Colón costarricense', symbol: '₡', locale: 'es-CR', decimals: 2 }

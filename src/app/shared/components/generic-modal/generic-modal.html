@@ -1,0 +1,19 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-sm transition-opacity duration-300">
+    <div class="card rounded-2xl mb-10 shadow-2xl scale-100 animate-fade-in max-w-screen-lg max-h-screen overflow-auto">
+      <header class="flex justify-between items-center p-2 border-b border-gray-200 dark:border-gray-700 rounded-t-2xl">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ title() }}</h2>
+        <button (click)="close()"
+                class="cursor-pointer text-text-light hover:text-primary-500 dark:text-text-dark dark:hover:text-primary-500 transition-colors text-2xl font-bold px-2 py-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </header>
+      <section class="p-1 pt-3">
+        <!-- Child content is injected here -->
+        <ng-content></ng-content>
+      </section>
+    </div>
+  </div>
+}

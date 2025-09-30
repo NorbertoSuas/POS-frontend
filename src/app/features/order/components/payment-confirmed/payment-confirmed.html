@@ -1,0 +1,165 @@
+<section class="grid grid-cols-12 h-full">
+  <!-- Lado izquierdo: Confirmación -->
+  <div class="col-span-6 flex items-center justify-center">
+    <section
+      class="flex flex-col items-center justify-center w-full h-full p-6"
+    >
+      <svg
+        class="w-20 h-20 text-green-500 mb-4 animate-bounce"
+        style="animation-duration: 0.8s; animation-iteration-count: 2"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <use [attr.href]="getIconHref('circle-check')" />
+      </svg>
+      <h2 class="text-3xl font-extrabold tracking-wide drop-shadow">
+        ¡Pago confirmado!
+      </h2>
+      <p class="text-gray-500 text-center text-lg">
+        Tu pedido ha sido procesado exitosamente.<br />
+        Será preparado y te avisaremos cuando esté listo.
+      </p>
+
+      <!-- Info de orden -->
+      <div class="flex flex-col gap-2 w-full max-w-xs mx-auto text-base">
+        <div class="flex justify-between">
+          <span>N° Orden:</span
+          ><span class="font-bold">{{ saleOrder().id }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Monto:</span>
+          <span
+            >{{ currency.symbol }}
+            {{ saleOrder().totalAmount | number : "1.2-2" }}</span
+          >
+        </div>
+
+        <div class="flex justify-between">
+          <span>Entrega:</span
+          ><span>{{ saleOrder().order.orderType.name }}</span>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex gap-4 mt-8">
+        <button
+          class="btn btn-primary flex items-center gap-2 transition shadow-lg"
+          (click)="printTicket()"
+        >
+          <svg class="w-6 h-6">
+            <use [attr.href]="getIconHref('printer')" />
+          </svg>
+          Imprimir recibo
+        </button>
+        <button
+          class="btn btn-outline btn-primary flex items-center gap-2 transition shadow-lg"
+        >
+          <svg class="w-6 h-6">
+            <use [attr.href]="getIconHref('notebook-pen')" />
+          </svg>
+          Nueva orden
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Lado derecho: Recibo tipo comanda -->
+  <div
+    class="contenedor-recibo col-span-6 bg-secondary-light p-2 max-h-[80vh] overflow-y-auto dark:bg-secondary-dark"
+  >
+    <section
+      id="print-section"
+      class="bg-primary-light rounded-xl p-5 flex flex-col items-center w-full max-w-[80mm] mx-auto border shadow-lg dark:bg-primary-dark"
+    >
+      <!-- Header -->
+      <div class="text-center text-xl font-bold mb-1 tracking-wide">
+        {{ posInfo.name.toLocaleUpperCase() }}
+      </div>
+      <div class="text-center text-xs text-gray-400 mb-1">
+        {{ posInfo.address }}
+      </div>
+      <div class="text-center text-xs text-gray-400 mb-1">
+        RUC: {{ posInfo.ruc }} - Tel: {{ posInfo.phone }}
+      </div>
+      <div class="text-center text-xs text-gray-400 mb-2">
+        Fecha: {{ saleOrder().createdAt | date : "dd/MM/yyyy - HH:mm" }}
+      </div>
+
+      <!-- Datos básicos -->
+
+      <div class="flex justify-between text-xs mb-1">
+        <span
+          >Caja: {{ saleOrder().cashRegisterId }} Cajero:
+          {{ saleOrder().employee.firstName }}
+          {{ saleOrder().employee.lastName }}</span
+        >
+      </div>
+
+      <div class="border-t border-dashed my-2 w-full"></div>
+      @for(product of saleOrder().order.listSelectedProductItems ; track
+      product.id) {
+      <!-- Productos -->
+      <div class="w-full text-xs font-mono">
+        <div class="flex justify-between mb-1">
+          <span>{{ product.quantity }}x {{ product.productName }}</span
+          ><span class=""
+            >{{ currency.symbol }}
+            {{ product.totalPrice | number : "1.2-2" }}</span
+          >
+        </div>
+        @if (product.selectedExtras?.length) {
+        <div class="text-gray-400 mb-1">
+          - @for (extra of product.selectedExtras; track extra.id) {
+          <span class="inline-block align-middle">
+            {{ extra.name }}<span class="text-gray-400">,</span>&nbsp;
+          </span>
+          }
+        </div>
+        }
+      </div>
+      }
+      <div class="border-t border-dashed my-2 w-full"></div>
+      <!-- Totales -->
+      <div class="w-full text-xs">
+        <div class="flex justify-between mb-1">
+          <span>Impuestos (13%):</span
+          ><span class="font-bold"
+            >{{ currency.symbol }}
+            {{ saleOrder().tax | number : "1.2-2" }}</span
+          >
+        </div>
+        <div class="flex justify-between mb-1 font text-lg">
+          <span>TOTAL:</span
+          ><span class="font-bold"
+            >{{ currency.symbol }}
+            {{ saleOrder().totalAmount | number : "1.2-2" }}</span
+          >
+        </div>
+      </div>
+
+      <div class="border-t border-dashed my-2 w-full"></div>
+
+      <!-- Footer -->
+      <div class="w-full text-xs mb-1 flex justify-between">
+        <span>Método de pago:</span><span>{{ saleOrder().paymentMethod }}</span>
+      </div>
+
+      <div class="flex items-center justify-center text-xs mt-2">
+        <i class="fas fa-check-circle mr-1"></i>PAGO CONFIRMADO
+      </div>
+      <div class="text-center text-lg mt-2">
+        #ORDEN: {{ saleOrder().order.id }}
+      </div>
+      <div class="text-center text-xs mt-2">¡Gracias por su visita!</div>
+      <div class="text-center text-[10px] text-gray-400 mt-2">
+        Conserve este ticket para cualquier aclaración
+      </div>
+      <div class="text-center text-[10px] text-gray-400">
+        --------------------------------
+      </div>
+      <div class="text-center text-[10px] text-gray-400">
+        Powered by CODELUM POS v2.3
+      </div>
+    </section>
+  </div>
+</section>
